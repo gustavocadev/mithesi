@@ -1,0 +1,385 @@
+{
+  "version": "6.0",
+  "nxVersion": "19.3.2",
+  "deps": {
+    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "date-fns": "^3.6.0",
+    "drizzle-orm": "^0.31.2",
+    "nanoid": "^5.0.7",
+    "pg": "^8.12.0",
+    "@builder.io/qwik": "1.5.7",
+    "@builder.io/qwik-city": "1.5.7",
+    "@conform-to/zod": "^1.1.5",
+    "@qwik-ui/headless": "^0.4.4",
+    "@qwik-ui/styled": "^0.1.0",
+    "@qwik-ui/utils": "^0.2.1",
+    "@types/bun": "*",
+    "@types/eslint": "^8.56.10",
+    "@types/node": "^18.15.7",
+    "@types/pg": "^8.11.6",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "autoprefixer": "^10.4.19",
+    "class-variance-authority": "^0.7.0",
+    "dotenv": "^16.3.2",
+    "drizzle-kit": "^0.22.8",
+    "eslint": "^8.57.0",
+    "eslint-plugin-qwik": "1.5.7",
+    "lucia": "^3.2.0",
+    "nx": "^19.3.2",
+    "postcss": "^8.4.39",
+    "prettier": "3.3.2",
+    "qwik-lucia": "^0.5.1",
+    "qwik-sonner": "^1.0.3",
+    "qwik-ui": "^0.1.0",
+    "tailwindcss": "^3.4.4",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "5.4.5",
+    "undici": "6.19.2",
+    "vite": "5.3.1",
+    "vite-tsconfig-paths": "4.3.2"
+  },
+  "pathMappings": {
+    "~/*": [
+      "./src/*"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "my-qwik-basic-starter": [
+        {
+          "file": ".env.example",
+          "hash": "6947842169327489939"
+        },
+        {
+          "file": ".eslintignore",
+          "hash": "17100511253115922275"
+        },
+        {
+          "file": ".eslintrc.cjs",
+          "hash": "9475788296149341543"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "3035560915091934230"
+        },
+        {
+          "file": ".prettierignore",
+          "hash": "4698942225615739918"
+        },
+        {
+          "file": ".vscode/launch.json",
+          "hash": "14061798908702655110"
+        },
+        {
+          "file": ".vscode/qwik-city.code-snippets",
+          "hash": "16078492451543393702"
+        },
+        {
+          "file": ".vscode/qwik.code-snippets",
+          "hash": "4632999021111928082"
+        },
+        {
+          "file": "README.md",
+          "hash": "11571689797029233956"
+        },
+        {
+          "file": "adapters/bun/vite.config.ts",
+          "hash": "12112520052065068094"
+        },
+        {
+          "file": "bun.lockb",
+          "hash": "11148397580600435367"
+        },
+        {
+          "file": "drizzle.config.ts",
+          "hash": "18029268231595346643"
+        },
+        {
+          "file": "package.json",
+          "hash": "9442033989173204033",
+          "deps": [
+            "npm:@builder.io/qwik",
+            "npm:@builder.io/qwik-city",
+            "npm:@conform-to/zod",
+            "npm:@qwik-ui/headless",
+            "npm:@qwik-ui/styled",
+            "npm:@qwik-ui/utils",
+            "npm:@types/bun",
+            "npm:@types/eslint",
+            "npm:@types/node",
+            "npm:@types/pg",
+            "npm:@typescript-eslint/eslint-plugin",
+            "npm:@typescript-eslint/parser",
+            "npm:autoprefixer",
+            "npm:class-variance-authority",
+            "npm:dotenv",
+            "npm:drizzle-kit",
+            "npm:eslint",
+            "npm:eslint-plugin-qwik",
+            "npm:lucia",
+            "npm:nx",
+            "npm:postcss",
+            "npm:prettier",
+            "npm:qwik-lucia",
+            "npm:qwik-sonner",
+            "npm:qwik-ui",
+            "npm:tailwindcss",
+            "npm:tailwindcss-animate",
+            "npm:typescript",
+            "npm:undici",
+            "npm:vite",
+            "npm:vite-tsconfig-paths",
+            "npm:@lucia-auth/adapter-drizzle",
+            "npm:date-fns",
+            "npm:drizzle-orm",
+            "npm:nanoid",
+            "npm:pg"
+          ]
+        },
+        {
+          "file": "postcss.config.cjs",
+          "hash": "14186219912588415944"
+        },
+        {
+          "file": "public/favicon.svg",
+          "hash": "446107399934622830"
+        },
+        {
+          "file": "public/manifest.json",
+          "hash": "7137267179367867196"
+        },
+        {
+          "file": "public/robots.txt",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "qwik-ui.config.json",
+          "hash": "17189465645030050949"
+        },
+        {
+          "file": "qwik.env.d.ts",
+          "hash": "11005898146604078119"
+        },
+        {
+          "file": "src/components/project/Contributor.tsx",
+          "hash": "16243185181253443241"
+        },
+        {
+          "file": "src/components/project/PreviewProject.tsx",
+          "hash": "17698452703171591838"
+        },
+        {
+          "file": "src/components/router-head/router-head.tsx",
+          "hash": "9257069958318632723"
+        },
+        {
+          "file": "src/components/shared/Header.tsx",
+          "hash": "13377180376392192381"
+        },
+        {
+          "file": "src/components/shared/InputWithLabel.tsx",
+          "hash": "10542155565809331653"
+        },
+        {
+          "file": "src/components/shared/Sidebar.tsx",
+          "hash": "9923654365457461016"
+        },
+        {
+          "file": "src/components/task/Task.tsx",
+          "hash": "13923957061057662146"
+        },
+        {
+          "file": "src/components/ui/button/button.tsx",
+          "hash": "10633993083796680445"
+        },
+        {
+          "file": "src/components/ui/input/input.tsx",
+          "hash": "17582996285641467565"
+        },
+        {
+          "file": "src/components/ui/label/label.tsx",
+          "hash": "6539900435188404667"
+        },
+        {
+          "file": "src/components/ui/textarea/textarea.tsx",
+          "hash": "4046968421712696848"
+        },
+        {
+          "file": "src/context/socket/SocketContext.tsx",
+          "hash": "10377862108924766823"
+        },
+        {
+          "file": "src/context/socket/SocketProvider.tsx",
+          "hash": "6334860012619545215"
+        },
+        {
+          "file": "src/context/task/TaskContext.tsx",
+          "hash": "5348365457984982779"
+        },
+        {
+          "file": "src/context/task/TaskProvider.tsx",
+          "hash": "12791978469502640659"
+        },
+        {
+          "file": "src/context/task/types/update-task-state.ts",
+          "hash": "6883197239157287041"
+        },
+        {
+          "file": "src/context/task/types/update-task.ts",
+          "hash": "6727894662504928290"
+        },
+        {
+          "file": "src/entry.bun.ts",
+          "hash": "4371196648804291648"
+        },
+        {
+          "file": "src/entry.dev.tsx",
+          "hash": "1003956568242302145"
+        },
+        {
+          "file": "src/entry.preview.tsx",
+          "hash": "16097969767584456362"
+        },
+        {
+          "file": "src/entry.ssr.tsx",
+          "hash": "2067324021215603840"
+        },
+        {
+          "file": "src/global.css",
+          "hash": "6956004705292171327"
+        },
+        {
+          "file": "src/root.tsx",
+          "hash": "17470086891198637460"
+        },
+        {
+          "file": "src/routes/(authed)/index.tsx",
+          "hash": "13848902664473653360"
+        },
+        {
+          "file": "src/routes/(authed)/layout.tsx",
+          "hash": "8160883049087680628"
+        },
+        {
+          "file": "src/routes/(authed)/projects/[id]/index.tsx",
+          "hash": "15479875350621711255"
+        },
+        {
+          "file": "src/routes/(authed)/projects/[id]/new-contributor/index.tsx",
+          "hash": "17539085535780801984"
+        },
+        {
+          "file": "src/routes/(authed)/projects/[id]/task/[id]/edit/index.tsx",
+          "hash": "6924210302716524661"
+        },
+        {
+          "file": "src/routes/(authed)/projects/[id]/task/new/index.tsx",
+          "hash": "5570795623701252705"
+        },
+        {
+          "file": "src/routes/(authed)/projects/edit/[id]/index.tsx",
+          "hash": "790723682058829272"
+        },
+        {
+          "file": "src/routes/(authed)/projects/index.tsx",
+          "hash": "6946894182636423362"
+        },
+        {
+          "file": "src/routes/(authed)/projects/new-project/index.tsx",
+          "hash": "10071319534509428325"
+        },
+        {
+          "file": "src/routes/(unauthed)/layout.tsx",
+          "hash": "9035921899591734766"
+        },
+        {
+          "file": "src/routes/(unauthed)/login/index.tsx",
+          "hash": "13989147881891027780"
+        },
+        {
+          "file": "src/routes/(unauthed)/recover-password/index.tsx",
+          "hash": "5783078552273145999"
+        },
+        {
+          "file": "src/routes/(unauthed)/signup/index.tsx",
+          "hash": "4479150941816586923"
+        },
+        {
+          "file": "src/routes/layout.tsx",
+          "hash": "5193431413589658639"
+        },
+        {
+          "file": "src/routes/service-worker.ts",
+          "hash": "16552815641638291574"
+        },
+        {
+          "file": "src/server/db/db.ts",
+          "hash": "13444989364154208470"
+        },
+        {
+          "file": "src/server/db/lucia.ts",
+          "hash": "18090259351661177950"
+        },
+        {
+          "file": "src/server/db/schema.ts",
+          "hash": "4922682349120861057"
+        },
+        {
+          "file": "src/server/services/auth/auth.ts",
+          "hash": "13316284182571879807"
+        },
+        {
+          "file": "src/server/services/contributor/contributor.ts",
+          "hash": "2711891136707974543"
+        },
+        {
+          "file": "src/server/services/contributor/types/UserContributor.ts",
+          "hash": "16904177945447575864"
+        },
+        {
+          "file": "src/server/services/project/dto/project.ts",
+          "hash": "15857090623561344729"
+        },
+        {
+          "file": "src/server/services/project/entities/project.ts",
+          "hash": "9383729564032247655"
+        },
+        {
+          "file": "src/server/services/project/project.ts",
+          "hash": "3358647209707551048"
+        },
+        {
+          "file": "src/server/services/task/entities/task.ts",
+          "hash": "18284497434403681798"
+        },
+        {
+          "file": "src/server/services/task/task.ts",
+          "hash": "17603441370687997378"
+        },
+        {
+          "file": "src/server/services/user/entities/user.ts",
+          "hash": "11169071500896421858"
+        },
+        {
+          "file": "src/server/services/user/user.ts",
+          "hash": "8365355397563101385"
+        },
+        {
+          "file": "tailwind.config.js",
+          "hash": "18340035634599436185"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "5217387305854344132"
+        },
+        {
+          "file": "vite.config.ts",
+          "hash": "16148375908809329533"
+        }
+      ]
+    },
+    "nonProjectFiles": []
+  }
+}
