@@ -213,22 +213,40 @@
         "hash": "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="
       }
     },
-    "npm:@builder.io/qwik": {
+    "npm:@builder.io/qwik@1.5.7": {
       "type": "npm",
-      "name": "npm:@builder.io/qwik",
+      "name": "npm:@builder.io/qwik@1.5.7",
       "data": {
         "version": "1.5.7",
         "packageName": "@builder.io/qwik",
         "hash": "sha512-+pbimhUk4dLQJNobWv1UgCkkQR8pWT/fuqE0djOj9NfAuxYTMrP+oJVeAyTiloIZwuXwsxIh/Pj1m5c7Ofqtww=="
       }
     },
-    "npm:@builder.io/qwik-city": {
+    "npm:@builder.io/qwik": {
       "type": "npm",
-      "name": "npm:@builder.io/qwik-city",
+      "name": "npm:@builder.io/qwik",
+      "data": {
+        "version": "1.7.0",
+        "packageName": "@builder.io/qwik",
+        "hash": "sha512-AF6P3VHxF6VtJaeVQsNT9SjGp0PFpQuKbwiTdVcGOf5ischVEz+PZfaRHQBDCupKg0wQl0Mn/4PYDYp0WVcJIg=="
+      }
+    },
+    "npm:@builder.io/qwik-city@1.5.7": {
+      "type": "npm",
+      "name": "npm:@builder.io/qwik-city@1.5.7",
       "data": {
         "version": "1.5.7",
         "packageName": "@builder.io/qwik-city",
         "hash": "sha512-2b1gr4IQu+AgL9q20RwbtTGtzzMctTMC1Aly61B7B+g5/UYYN4KHapoRaS+3NXrsDT+ahF09vfoDIxHzmuHtAA=="
+      }
+    },
+    "npm:@builder.io/qwik-city": {
+      "type": "npm",
+      "name": "npm:@builder.io/qwik-city",
+      "data": {
+        "version": "1.7.0",
+        "packageName": "@builder.io/qwik-city",
+        "hash": "sha512-neufbMgSpr2NhM3EFXsggJdFxVtvw/381pH8mFbA+v041megxFDyFVSsCrI+Dud4zBs96trz7pm4hzeweDb0Ng=="
       }
     },
     "npm:@clack/core": {
@@ -1734,6 +1752,15 @@
         "hash": "sha512-NZkHmN6jZP6DMB6JL4iBc4vrXP+GbFSxCoTDTWrlB2bGL6D7+/IXkHzruLVH9GaLqo7yMgc/SBTZCZCPfVU3FA=="
       }
     },
+    "npm:@qwikest/icons": {
+      "type": "npm",
+      "name": "npm:@qwikest/icons",
+      "data": {
+        "version": "0.0.13",
+        "packageName": "@qwikest/icons",
+        "hash": "sha512-e0wY8vmx0nDSUiuCATlk+ojTvdBV4txIGHHWjZW5SRkv4XB8H9+3WSDcLPz0ItUdRyzcrohE9k2jtQI/98aRPA=="
+      }
+    },
     "npm:@rollup/pluginutils": {
       "type": "npm",
       "name": "npm:@rollup/pluginutils",
@@ -3097,18 +3124,18 @@
       "type": "npm",
       "name": "npm:drizzle-kit",
       "data": {
-        "version": "0.22.8",
+        "version": "0.23.0",
         "packageName": "drizzle-kit",
-        "hash": "sha512-VjI4wsJjk3hSqHSa3TwBf+uvH6M6pRHyxyoVbt935GUzP9tUR/BRZ+MhEJNgryqbzN2Za1KP0eJMTgKEPsalYQ=="
+        "hash": "sha512-w9jE97z193dd4jzAyj4Uv2SOh8Ydue70Ki6W0awy4bGM1aPXan6zD6Yv+nNTA6oGgNTDl2MJFxutjHG4fden5g=="
       }
     },
     "npm:drizzle-orm": {
       "type": "npm",
       "name": "npm:drizzle-orm",
       "data": {
-        "version": "0.31.2",
+        "version": "0.32.0",
         "packageName": "drizzle-orm",
-        "hash": "sha512-QnenevbnnAzmbNzQwbhklvIYrDE8YER8K7kSrAWQSV1YvFCdSQPzj+jzqRdTSsV2cDqSpQ0NXGyL1G9I43LDLg=="
+        "hash": "sha512-99IlfVGPNHzOFEXo9Phyu5At5TALLsY2t6WxFFy68rYd9Ej4cHX/7WjdPOn7JNRW69MNeNtP8XrDQg43SppuAA=="
       }
     },
     "npm:duplexer": {
@@ -3340,9 +3367,9 @@
       "type": "npm",
       "name": "npm:eslint-plugin-qwik",
       "data": {
-        "version": "1.5.7",
+        "version": "1.7.0",
         "packageName": "eslint-plugin-qwik",
-        "hash": "sha512-hZZTB6NHqQUEdLsofF3GrPvlmMcvCEjfbBZomn3nJKzazsnfuTzPfkOmK0kTYeEPu5T2kyuDxGukoii+S1Zj/A=="
+        "hash": "sha512-ZggDtq1TnYRiReq0vEKuIX2ojXc2eQlgnRT0gUlxcsqBOCCOLTBO2bYtrF8KTxP3D2RemcdwHlGppLN4/+LzDw=="
       }
     },
     "npm:eslint-scope": {
@@ -6594,15 +6621,6 @@
         "hash": "sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw=="
       }
     },
-    "npm:undici@5.21.0": {
-      "type": "npm",
-      "name": "npm:undici@5.21.0",
-      "data": {
-        "version": "5.21.0",
-        "packageName": "undici",
-        "hash": "sha512-HOjK8l6a57b2ZGXOcUsI5NLfoTrfmbOl90ixJDl0AEFG4wgHNDQxtZy15/ZQp7HhjkpaGlp/eneMgtsu1dIlUA=="
-      }
-    },
     "npm:undici": {
       "type": "npm",
       "name": "npm:undici",
@@ -6962,6 +6980,11 @@
       },
       {
         "source": "my-qwik-basic-starter",
+        "target": "npm:@qwikest/icons",
+        "type": "static"
+      },
+      {
+        "source": "my-qwik-basic-starter",
         "target": "npm:@types/bun",
         "type": "static"
       },
@@ -7111,6 +7134,18 @@
         "type": "static"
       }
     ],
+    "npm:@builder.io/qwik@1.5.7": [
+      {
+        "source": "npm:@builder.io/qwik@1.5.7",
+        "target": "npm:csstype",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik@1.5.7",
+        "target": "npm:vite",
+        "type": "static"
+      }
+    ],
     "npm:@builder.io/qwik": [
       {
         "source": "npm:@builder.io/qwik",
@@ -7120,6 +7155,53 @@
       {
         "source": "npm:@builder.io/qwik",
         "target": "npm:vite",
+        "type": "static"
+      }
+    ],
+    "npm:@builder.io/qwik-city@1.5.7": [
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:@mdx-js/mdx",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:@types/mdx",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:source-map",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:svgo",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:undici",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:vfile",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:vite",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:vite-imagetools",
+        "type": "static"
+      },
+      {
+        "source": "npm:@builder.io/qwik-city@1.5.7",
+        "target": "npm:zod",
         "type": "static"
       }
     ],
@@ -7146,7 +7228,7 @@
       },
       {
         "source": "npm:@builder.io/qwik-city",
-        "target": "npm:undici@5.21.0",
+        "target": "npm:undici",
         "type": "static"
       },
       {
@@ -13874,13 +13956,6 @@
       {
         "source": "npm:unbox-primitive",
         "target": "npm:which-boxed-primitive",
-        "type": "static"
-      }
-    ],
-    "npm:undici@5.21.0": [
-      {
-        "source": "npm:undici@5.21.0",
-        "target": "npm:busboy",
         "type": "static"
       }
     ],

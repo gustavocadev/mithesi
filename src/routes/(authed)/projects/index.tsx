@@ -1,9 +1,12 @@
-import { component$ } from '@builder.io/qwik';
-import { PreviewProject } from '~/components/project/PreviewProject';
+import { component$, useContext } from '@builder.io/qwik';
+import { ProjectPost } from '~/components/project/ProjectPost';
 import { type DocumentHead, routeLoader$ } from '@builder.io/qwik-city';
 import { handleRequest } from '~/server/db/lucia';
 import { findProjectsByUserId } from '~/server/services/project/project';
 import { findOneUser } from '~/server/services/user/user';
+import { Button } from '~/components/ui/button/button';
+import { Card } from '~/components/ui/card/card';
+import { ProjectContext } from '~/context/project/ProjectContext';
 
 export const useLoaderProjects = routeLoader$(async (event) => {
   const authRequest = handleRequest(event);
@@ -51,26 +54,40 @@ export const userLoaderUser = routeLoader$(async (event) => {
 
 export default component$(() => {
   const loaderProjects = useLoaderProjects();
-  const loaderUser = userLoaderUser();
+  const { showCreateProjectModal } = useContext(ProjectContext);
 
   return (
-    <>
-      <h1 class="text-4xl font-black">Projects</h1>
-      <div class="bg-white shadow mt-10 rounded-lg ">
-        {loaderProjects.value?.projectsByUser?.map((project) => (
-          <PreviewProject
-            project={project}
-            key={project.id}
-            authUserId={loaderUser.value.user?.id ?? ''}
-          />
-        ))}
-      </div>
-    </>
+    <Card.Root class="w-4/12 mx-auto rounded-xl">
+      <section class="flex items-center py-3 px-6">
+        <p
+          class="flex-1 text-gray-400 text-md cursor-text"
+          onClick$={() => (showCreateProjectModal.value = true)}
+        >
+          Publica un proyecto...
+        </p>
+        <Button
+          class="font-semibold text-md px-4 py-2"
+          look="outline"
+          onClick$={() => (showCreateProjectModal.value = true)}
+        >
+          Post
+        </Button>
+      </section>
+      {loaderProjects.value?.projectsByUser?.map((project) => (
+        <ProjectPost
+          key={project.id}
+          createdAt={project.createdAt}
+          description={project.description}
+          id={project.id}
+          name={project.name}
+        />
+      ))}
+    </Card.Root>
   );
 });
 
 export const head: DocumentHead = {
-  title: 'Mis projectos',
+  title: 'Mis proyectos',
   meta: [
     {
       name: 'description',

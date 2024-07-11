@@ -1,7 +1,7 @@
 import { component$, Slot } from '@builder.io/qwik';
 import { routeLoader$ } from '@builder.io/qwik-city';
+import { CreateProjectModal } from '~/components/project/CreateProjectModal';
 import { Header } from '~/components/shared/Header';
-import { Sidebar } from '~/components/shared/Sidebar';
 import { handleRequest } from '~/server/db/lucia';
 import { findOneUser } from '~/server/services/user/user';
 
@@ -33,16 +33,13 @@ export const useUserDataLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   return (
-    <>
-      <section>
-        <Header />
-        <div class="md:flex md:min-h-screen">
-          <Sidebar />
-          <main class="flex-1 p-10">
-            <Slot />
-          </main>
-        </div>
-      </section>
-    </>
+    <div>
+      <Header />
+      <main class="flex-1 p-10">
+        <Slot />
+      </main>
+
+      <CreateProjectModal />
+    </div>
   );
 });

@@ -15,6 +15,7 @@ import { login } from '~/server/services/auth/auth';
 
 export const useAuthSigninAction = routeAction$(
   async (values, { redirect, fail, cookie }) => {
+    console.log(values);
     // Important! Use `handleRequest` to handle the authentication request
     const authRequest = handleRequest({ cookie });
     const { message, session } = await login(values.email, values.password);
@@ -77,7 +78,7 @@ export default component$(() => {
               Password
             </label>
             <Input
-              type="text"
+              type="password"
               id="password"
               placeholder="Password de registro"
               class="w-full bg-gray-50"

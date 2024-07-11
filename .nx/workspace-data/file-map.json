@@ -4,15 +4,16 @@
   "deps": {
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.31.2",
+    "drizzle-orm": "^0.32.0",
     "nanoid": "^5.0.7",
     "pg": "^8.12.0",
-    "@builder.io/qwik": "1.5.7",
-    "@builder.io/qwik-city": "1.5.7",
+    "@builder.io/qwik": "1.7.0",
+    "@builder.io/qwik-city": "1.7.0",
     "@conform-to/zod": "^1.1.5",
     "@qwik-ui/headless": "^0.4.4",
     "@qwik-ui/styled": "^0.1.0",
     "@qwik-ui/utils": "^0.2.1",
+    "@qwikest/icons": "^0.0.13",
     "@types/bun": "*",
     "@types/eslint": "^8.56.10",
     "@types/node": "^18.15.7",
@@ -22,9 +23,9 @@
     "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "dotenv": "^16.3.2",
-    "drizzle-kit": "^0.22.8",
+    "drizzle-kit": "^0.23.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-qwik": "1.5.7",
+    "eslint-plugin-qwik": "1.7.0",
     "lucia": "^3.2.0",
     "nx": "^19.3.2",
     "postcss": "^8.4.39",
@@ -90,7 +91,7 @@
         },
         {
           "file": "bun.lockb",
-          "hash": "11148397580600435367"
+          "hash": "9026196261225602428"
         },
         {
           "file": "drizzle.config.ts",
@@ -98,7 +99,7 @@
         },
         {
           "file": "package.json",
-          "hash": "9442033989173204033",
+          "hash": "2882601989702879127",
           "deps": [
             "npm:@builder.io/qwik",
             "npm:@builder.io/qwik-city",
@@ -106,6 +107,7 @@
             "npm:@qwik-ui/headless",
             "npm:@qwik-ui/styled",
             "npm:@qwik-ui/utils",
+            "npm:@qwikest/icons",
             "npm:@types/bun",
             "npm:@types/eslint",
             "npm:@types/node",
@@ -167,8 +169,8 @@
           "hash": "16243185181253443241"
         },
         {
-          "file": "src/components/project/PreviewProject.tsx",
-          "hash": "17698452703171591838"
+          "file": "src/components/project/ProjectPost.tsx",
+          "hash": "6977921398564849519"
         },
         {
           "file": "src/components/router-head/router-head.tsx",
@@ -176,7 +178,7 @@
         },
         {
           "file": "src/components/shared/Header.tsx",
-          "hash": "13377180376392192381"
+          "hash": "15788602142220522895"
         },
         {
           "file": "src/components/shared/InputWithLabel.tsx",
@@ -188,11 +190,19 @@
         },
         {
           "file": "src/components/task/Task.tsx",
-          "hash": "13923957061057662146"
+          "hash": "15619975280937123142"
+        },
+        {
+          "file": "src/components/ui/badge/badge.tsx",
+          "hash": "2688489573138208967"
         },
         {
           "file": "src/components/ui/button/button.tsx",
           "hash": "10633993083796680445"
+        },
+        {
+          "file": "src/components/ui/card/card.tsx",
+          "hash": "5371163332259449716"
         },
         {
           "file": "src/components/ui/input/input.tsx",
@@ -203,8 +213,12 @@
           "hash": "6539900435188404667"
         },
         {
+          "file": "src/components/ui/select/select.tsx",
+          "hash": "5416832135485275611"
+        },
+        {
           "file": "src/components/ui/textarea/textarea.tsx",
-          "hash": "4046968421712696848"
+          "hash": "10049209420405176897"
         },
         {
           "file": "src/context/socket/SocketContext.tsx",
@@ -256,27 +270,19 @@
         },
         {
           "file": "src/routes/(authed)/index.tsx",
-          "hash": "13848902664473653360"
+          "hash": "5643238319123749304"
         },
         {
           "file": "src/routes/(authed)/layout.tsx",
-          "hash": "8160883049087680628"
+          "hash": "12902539041297970532"
         },
         {
           "file": "src/routes/(authed)/projects/[id]/index.tsx",
-          "hash": "15479875350621711255"
+          "hash": "13567525097948750022"
         },
         {
-          "file": "src/routes/(authed)/projects/[id]/new-contributor/index.tsx",
-          "hash": "17539085535780801984"
-        },
-        {
-          "file": "src/routes/(authed)/projects/[id]/task/[id]/edit/index.tsx",
-          "hash": "6924210302716524661"
-        },
-        {
-          "file": "src/routes/(authed)/projects/[id]/task/new/index.tsx",
-          "hash": "5570795623701252705"
+          "file": "src/routes/(authed)/projects/[id]/new-committee-member/index.tsx",
+          "hash": "4978966017072897877"
         },
         {
           "file": "src/routes/(authed)/projects/edit/[id]/index.tsx",
@@ -284,7 +290,7 @@
         },
         {
           "file": "src/routes/(authed)/projects/index.tsx",
-          "hash": "6946894182636423362"
+          "hash": "15653998385908188118"
         },
         {
           "file": "src/routes/(authed)/projects/new-project/index.tsx",
@@ -296,15 +302,15 @@
         },
         {
           "file": "src/routes/(unauthed)/login/index.tsx",
-          "hash": "13989147881891027780"
+          "hash": "9656535258792744515"
         },
         {
           "file": "src/routes/(unauthed)/recover-password/index.tsx",
-          "hash": "5783078552273145999"
+          "hash": "3180411137990252008"
         },
         {
           "file": "src/routes/(unauthed)/signup/index.tsx",
-          "hash": "4479150941816586923"
+          "hash": "17712104960069876150"
         },
         {
           "file": "src/routes/layout.tsx",

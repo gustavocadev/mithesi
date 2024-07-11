@@ -132,7 +132,7 @@ export default component$(() => {
               Contraseña
             </label>
             <Input
-              type="text"
+              type="password"
               id="password"
               name="password"
               placeholder="Password de registro"

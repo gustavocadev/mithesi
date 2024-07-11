@@ -1,8 +1,9 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useContext } from '@builder.io/qwik';
 import { Form, Link, globalAction$ } from '@builder.io/qwik-city';
 import { handleRequest } from '~/server/db/lucia';
 import { Button } from '../ui/button/button';
 import { Input } from '../ui/input/input';
+import { SocketContext } from '~/context/socket/SocketContext';
 
 export const useSignoutAction = globalAction$(async (values, event) => {
   const authRequest = handleRequest(event);
@@ -17,6 +18,8 @@ export const useSignoutAction = globalAction$(async (values, event) => {
 
 export const Header = component$(() => {
   const signoutAction = useSignoutAction();
+  const { isOnline } = useContext(SocketContext);
+
   return (
     <header class="px-4 py-5 bg-white border-b">
       <nav class="md:flex md:justify-between items-center">
@@ -24,7 +27,7 @@ export const Header = component$(() => {
           href="/projects"
           class="text-4xl text-secondary font-black text-center"
         >
-          Mitask
+          Mithesi {isOnline ? '🟢' : '🔴'}
         </Link>
 
         <div class="flex flex-col md:flex-row items-center gap-4">

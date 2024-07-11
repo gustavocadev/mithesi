@@ -7,6 +7,8 @@ import {
   routeAction$,
   type DocumentHead,
 } from '@builder.io/qwik-city';
+import { Button } from '~/components/ui/button/button';
+import { Input } from '~/components/ui/input/input';
 import { createContributor } from '~/server/services/contributor/contributor';
 import { findOneProject } from '~/server/services/project/project';
 import { findOneUser, findOneUserByEmail } from '~/server/services/user/user';
@@ -82,38 +84,34 @@ export default component$(() => {
   return (
     <>
       <h1 class="text-4xl font-bold">
-        Añadir Colaborador(a) al Proyecto:{' '}
+        Añadir Colaborador(a) al Proyecto de tesis:{' '}
         <span class="font-semibold">{loaderProject.value.project?.name}</span>
       </h1>
 
       <div class="mt-10 flex justify-center">
         <Form
-          class="bg-white py-10 px-5 w-full md:w-1/2 rounded-lg shadow mx-auto"
+          class="bg-white py-10 px-5 w-full xl:w-1/2 rounded-lg shadow mx-auto space-y-4"
           action={actionSearchUsers}
         >
-          <div class="mb-5">
+          <div class="space-y-2">
             <label
               class="text-gray-700 uppercase font-bold text-sm"
               for="email"
             >
-              Email Colaborador
+              Email del miembro del jurado
             </label>
 
-            <input
+            <Input
               type="email"
               id="email"
               name="email"
               placeholder="Email del Usuario"
-              class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
             />
           </div>
 
-          <button
-            type="submit"
-            class="bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded text-sm"
-          >
+          <Button type="submit" class="w-full uppercase text-md font-bold">
             Buscar Colaborador
-          </button>
+          </Button>
         </Form>
       </div>
 
