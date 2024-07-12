@@ -5,13 +5,14 @@ import {
   text,
   timestamp,
   boolean,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
-import { generateId } from 'lucia';
+import { generateIdFromEntropySize } from 'lucia';
 
 export const userTable = pgTable('user', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => generateId(15)),
+    .$defaultFn(() => generateIdFromEntropySize(10)),
   passwordHash: varchar('password_hash').notNull(),
   username: varchar('username'),
   // other user attributes
@@ -28,23 +29,13 @@ export const userTable = pgTable('user', {
   isConfirmed: boolean('is_confirmed').notNull().default(false),
   token: text('token'),
 
-  createdAt: timestamp('created_at', {
-    withTimezone: true,
-    mode: 'date',
-  })
-    .notNull()
-    .defaultNow(),
-
-  updatedAt: timestamp('updated_at', {
-    withTimezone: true,
-    mode: 'date',
-  }).defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
 export type SelectUser = typeof userTable.$inferSelect;
 
 export const userRelations = relations(userTable, ({ many }) => ({
-  project: many(project),
+  thesisProject: many(thesisProject),
 }));
 
 export const sessionTable = pgTable('session', {
@@ -60,111 +51,156 @@ export const sessionTable = pgTable('session', {
 
 export type SelectSession = typeof sessionTable.$inferSelect;
 
-export const project = pgTable('project', {
+export const userRole = pgTable('user_role', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => generateId(15)),
+    .$defaultFn(() => generateIdFromEntropySize(10)),
+  userId: text('user_id')
+    .references(() => userTable.id)
+    .notNull(),
+  roleId: text('role_id').notNull(),
+});
+export type SelectUserRole = typeof userRole.$inferSelect;
 
-  name: text('name').notNull(),
+export const userRoleRelations = relations(userRole, ({ one }) => ({
+  user: one(userTable, {
+    fields: [userRole.userId],
+    references: [userTable.id],
+  }),
+  role: one(role, {
+    fields: [userRole.roleId],
+    references: [role.id],
+  }),
+}));
+
+export const roleNames = ['admin', 'user'] as const;
+// const roleEnum = pgEnum('roleEnum', roleNames);
+export const role = pgTable('role', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => generateIdFromEntropySize(10)),
+  name: text('name').notNull().default('user'),
+});
+export type SelectRole = typeof role.$inferSelect;
+
+export const roleRelations = relations(role, ({ many }) => ({
+  userRole: many(userRole),
+}));
+
+const thesisProjectStatus = ['pending', 'approved', 'rejected'] as const;
+const thesisProjectStatusEnum = pgEnum(
+  'thesisProjectStatusEnum',
+  thesisProjectStatus
+);
+export const thesisProject = pgTable('thesis_project', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => generateIdFromEntropySize(10)),
+
+  title: text('title').notNull(),
   description: text('description').notNull(),
-  customerName: text('customer_name').notNull(),
-  deliveryDate: timestamp('delivery_date', {
-    withTimezone: true,
-    mode: 'date',
-  }).notNull(),
-
-  createdAt: timestamp('created_at', {
-    withTimezone: true,
-    mode: 'date',
-  }).defaultNow(),
-
-  updatedAt: timestamp('updated_at', {
-    withTimezone: true,
-    mode: 'date',
-  }).defaultNow(),
+  urlPdf: text('url_pdf').notNull(),
+  urlImg: text('url_img'),
+  status: text('status').notNull().default('pending'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 
   // the author of the project
   userId: text('user_id')
     .references(() => userTable.id)
     .notNull(),
 });
-export type SelectProject = typeof project.$inferSelect;
+export type SelectProject = typeof thesisProject.$inferSelect;
 
-export const projectRelations = relations(project, ({ one, many }) => ({
-  userTable: one(userTable, {
-    fields: [project.userId],
-    references: [userTable.id],
-  }),
+export const thesisProjectRelations = relations(
+  thesisProject,
+  ({ one, many }) => ({
+    userTable: one(userTable, {
+      fields: [thesisProject.userId],
+      references: [userTable.id],
+    }),
 
-  contributor: many(contributor),
-  task: many(task),
-}));
+    comment: many(comment),
+  })
+);
 
-export const contributor = pgTable('contributor', {
+export const committeeMember = pgTable('contributor', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => generateId(15)),
+    .$defaultFn(() => generateIdFromEntropySize(10)),
   userId: text('user_id')
     .references(() => userTable.id)
     .notNull(),
-  projectId: text('project_id')
-    .references(() => project.id)
+  thesisProjectId: text('thesis_project_id')
+    .references(() => thesisProject.id)
     .notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
-export type SelectContributor = typeof contributor.$inferSelect;
+export type SelectCommitteeMember = typeof committeeMember.$inferSelect;
 
-export const contributorRelations = relations(contributor, ({ one }) => ({
+export const committeeMemberRelations = relations(
+  committeeMember,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [committeeMember.userId],
+      references: [userTable.id],
+    }),
+    thesisProject: one(thesisProject, {
+      fields: [committeeMember.thesisProjectId],
+      references: [thesisProject.id],
+    }),
+  })
+);
+
+export const comment = pgTable('comment', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => generateIdFromEntropySize(10)),
+  content: text('content').notNull(),
+  userId: text('user_id')
+    .references(() => userTable.id)
+    .notNull(),
+  isVisible: boolean('is_visible').notNull().default(true),
+  thesisProjectId: text('thesis_project_id').notNull(),
+  commentParentId: text('comment_parent_id'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+export type SelectComment = typeof comment.$inferSelect;
+
+export const commentRelations = relations(comment, ({ one, many }) => ({
   user: one(userTable, {
-    fields: [contributor.userId],
+    fields: [comment.userId],
     references: [userTable.id],
   }),
-  project: one(project, {
-    fields: [contributor.projectId],
-    references: [project.id],
+  thesisProject: one(thesisProject, {
+    fields: [comment.thesisProjectId],
+    references: [thesisProject.id],
+  }),
+  commentParent: one(comment, {
+    fields: [comment.commentParentId],
+    references: [comment.id],
   }),
 }));
 
-export const task = pgTable('task', {
+export const like = pgTable('like', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => generateId(15)),
-  name: text('name').notNull(),
-  description: text('description').notNull(),
-  priority: text('priority').notNull(),
-  state: boolean('state').notNull(),
-
-  deliveryDate: timestamp('delivery_date', {
-    withTimezone: true,
-    mode: 'date',
-  }).notNull(),
-
-  createdAt: timestamp('created_at', {
-    withTimezone: true,
-    mode: 'date',
-  }).defaultNow(),
-
-  updatedAt: timestamp('updated_at', {
-    withTimezone: true,
-    mode: 'date',
-  }).defaultNow(),
-
-  projectId: text('project_id').references(() => project.id),
-
-  userWhoCompletedTaskId: text('user_who_completed_task_id').references(
-    () => userTable.id
-  ),
+    .$defaultFn(() => generateIdFromEntropySize(10)),
+  userId: text('user_id')
+    .references(() => userTable.id)
+    .notNull(),
+  thesisProjectId: text('thesis_project_id').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-export type SelectTask = typeof task.$inferSelect;
-
-export const taskRelations = relations(task, ({ one }) => ({
-  project: one(project, {
-    fields: [task.projectId],
-    references: [project.id],
-  }),
-  userWhoCompletedTask: one(userTable, {
-    fields: [task.userWhoCompletedTaskId],
+export const likeRelations = relations(like, ({ one }) => ({
+  user: one(userTable, {
+    fields: [like.userId],
     references: [userTable.id],
+  }),
+  thesisProject: one(thesisProject, {
+    fields: [like.thesisProjectId],
+    references: [thesisProject.id],
   }),
 }));

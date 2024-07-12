@@ -1,5 +1,6 @@
 import { component$, Slot } from '@builder.io/qwik';
 import { routeLoader$ } from '@builder.io/qwik-city';
+import { Toaster } from 'qwik-sonner';
 import { CreateProjectModal } from '~/components/project/CreateProjectModal';
 import { Header } from '~/components/shared/Header';
 import { handleRequest } from '~/server/db/lucia';
@@ -40,6 +41,7 @@ export default component$(() => {
       </main>
 
       <CreateProjectModal />
+      <Toaster />
     </div>
   );
 });

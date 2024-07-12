@@ -9,8 +9,9 @@ import {
 } from '@builder.io/qwik-city';
 import { Button } from '~/components/ui/button/button';
 import { Input } from '~/components/ui/input/input';
-import { createContributor } from '~/server/services/contributor/contributor';
-import { findOneProject } from '~/server/services/project/project';
+import { findOneThesisProject } from '~/server/services/project/project';
+// import { createContributor } from '~/server/services/contributor/contributor';
+// import { findOneProject } from '~/server/services/project/project';
 import { findOneUser, findOneUserByEmail } from '~/server/services/user/user';
 
 export const useActionSearchUsers = routeAction$(
@@ -57,7 +58,7 @@ export const useActionAddContributor = routeAction$(
     //   },
     // });
 
-    await createContributor(values.userId, values.projectId);
+    // await createContributor(values.userId, values.projectId);
 
     console.log({ userToAdd });
     throw request.redirect(303, `/projects/${values.projectId}`);
@@ -70,7 +71,7 @@ export const useActionAddContributor = routeAction$(
 
 export const useLoaderProject = routeLoader$(async ({ params }) => {
   // the project data
-  const project = await findOneProject(params.id);
+  const project = await findOneThesisProject(params.id);
 
   return {
     project,
@@ -85,7 +86,7 @@ export default component$(() => {
     <>
       <h1 class="text-4xl font-bold">
         Añadir Colaborador(a) al Proyecto de tesis:{' '}
-        <span class="font-semibold">{loaderProject.value.project?.name}</span>
+        <span class="font-semibold">{loaderProject.value.project?.title}</span>
       </h1>
 
       <div class="mt-10 flex justify-center">

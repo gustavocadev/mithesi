@@ -1,7 +1,6 @@
-export type CreateProjectDto = {
-  name: string;
-  userId: string;
-  customerName: string;
-  deliveryDate: Date;
-  description: string;
-};
+import { SelectProject } from '~/server/db/schema';
+
+export type CreateProjectDto = Omit<
+  SelectProject,
+  'createdAt' | 'updatedAt' | 'id' | 'status'
+>;

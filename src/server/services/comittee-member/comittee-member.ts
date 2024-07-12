@@ -1,11 +1,11 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '~/server/db/db';
-import { contributor, project, userTable } from '~/server/db/schema';
-import { UserContributor } from './types/UserContributor';
+import { committeeMember, thesisProject, userTable } from '~/server/db/schema';
+import { UserComitteeMember } from './types/comittee-member';
 
 export const findContributorsByProjectId = async (
   projectId: string
-): Promise<UserContributor[]> => {
+): Promise<UserComitteeMember[]> => {
   const contributors = await db
     .select({
       id: userTable.id,
@@ -13,10 +13,13 @@ export const findContributorsByProjectId = async (
       email: userTable.email,
       lastName: userTable.lastName,
     })
-    .from(contributor)
-    .innerJoin(project, eq(project.id, contributor.projectId))
-    .innerJoin(userTable, eq(userTable.id, contributor.userId))
-    .where(eq(project.id, projectId));
+    .from(committeeMember)
+    .innerJoin(
+      thesisProject,
+      eq(thesisProject.id, committeeMember.thesisProjectId)
+    )
+    .innerJoin(userTable, eq(userTable.id, committeeMember.userId))
+    .where(eq(thesisProject.id, projectId));
   return contributors;
 };
 
@@ -24,9 +27,9 @@ export const createContributor = async (
   userId: string,
   projectId: string
 ): Promise<void> => {
-  await db.insert(contributor).values({
+  await db.insert(committeeMember).values({
     userId,
-    projectId,
+    thesisProjectId: projectId,
   });
 };
 
@@ -37,11 +40,11 @@ export const removeOneContributor = async (
   await db.transaction(async (tx) => {
     try {
       await db
-        .delete(contributor)
+        .delete(committeeMember)
         .where(
           and(
-            eq(contributor.userId, userId),
-            eq(contributor.projectId, projectId)
+            eq(committeeMember.userId, userId),
+            eq(committeeMember.thesisProjectId, projectId)
           )
         );
     } catch (error) {

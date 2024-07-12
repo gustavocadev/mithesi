@@ -22,7 +22,7 @@ export const useLoaderProjects = routeLoader$(async (event) => {
   // if there is a search param, filter the projects by the search param
   if (projectName) {
     const projects = projectsByUser.filter((project) => {
-      return project.name.toLowerCase().includes(projectName.toLowerCase());
+      return project.title.toLowerCase().includes(projectName.toLowerCase());
     });
 
     return {
@@ -79,7 +79,7 @@ export default component$(() => {
           createdAt={project.createdAt}
           description={project.description}
           id={project.id}
-          name={project.name}
+          name={project.title}
         />
       ))}
     </Card.Root>

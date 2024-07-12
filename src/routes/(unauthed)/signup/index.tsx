@@ -148,7 +148,7 @@ export default component$(() => {
               Repetir Contraseña
             </label>
             <Input
-              type="text"
+              type="password"
               id="confirmPassword"
               name="confirmPassword"
               placeholder="Repetir password"

@@ -1,17 +1,17 @@
 import { component$ } from '@builder.io/qwik';
 import { type DocumentHead, Link, routeLoader$ } from '@builder.io/qwik-city';
-import Contributor from '~/components/project/Contributor';
+import { ComitteeMember } from '~/components/project/ComitteeMember';
 import { Button } from '~/components/ui/button/button';
 import { handleRequest } from '~/server/db/lucia';
-import { findContributorsByProjectId } from '~/server/services/contributor/contributor';
-import { findOneProject } from '~/server/services/project/project';
+import { findOneThesisProject } from '~/server/services/project/project';
 import { findOneUser } from '~/server/services/user/user';
 import { LuArrowLeft } from '@qwikest/icons/lucide';
 import { ProjectPost } from '~/components/project/ProjectPost';
+import { findContributorsByProjectId } from '~/server/services/comittee-member/comittee-member';
 
 export const useLoaderProject = routeLoader$(async ({ params }) => {
   // the project data
-  const project = await findOneProject(params.id);
+  const project = await findOneThesisProject(params.id);
 
   return {
     project,
@@ -23,7 +23,7 @@ export const useLoaderContributors = routeLoader$(async ({ params }) => {
   const contributors = await findContributorsByProjectId(params.id);
 
   return {
-    contributors: contributors,
+    contributors,
   };
 });
 
@@ -91,7 +91,7 @@ export default component$(() => {
       <ProjectPost
         createdAt={loaderProject.value.project?.createdAt}
         description={loaderProject.value.project?.description}
-        name={loaderProject.value.project?.name}
+        name={loaderProject.value.project?.title}
         id={loaderProject.value.project?.id}
       />
 
@@ -114,8 +114,7 @@ export default component$(() => {
       <div>
         {loaderContributors.value?.contributors.length ? (
           loaderContributors.value?.contributors.map((contributor) => (
-            // <Contributor contributor={contributor} key={contributor.contributors.} />
-            <Contributor
+            <ComitteeMember
               contributor={contributor}
               key={contributor.id}
               projectId={loaderProject.value.project?.id ?? ''}
@@ -136,7 +135,7 @@ export const head: DocumentHead = ({ resolveValue, params }) => {
   const project = resolveValue(useLoaderProject);
 
   return {
-    title: `Proyecto "${project.project.name}"`,
+    title: `Proyecto "${project.project.title}"`,
     meta: [
       {
         name: 'description',

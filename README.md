@@ -18,3 +18,5 @@ bun run serve
 ```
 
 Then visit [http://localhost:3000/](http://localhost:3000/)
+
+DB Diagram: [https://dbdiagram.io/d/app-proyecto-tesis-668c14e49939893dae5b6ff1](https://dbdiagram.io/d/app-proyecto-tesis-668c14e49939893dae5b6ff1)

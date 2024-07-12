@@ -1,13 +1,12 @@
 import { component$ } from '@builder.io/qwik';
 import { Form, globalAction$, z, zod$ } from '@builder.io/qwik-city';
-import { removeOneContributor } from '~/server/services/contributor/contributor';
-import type { UserContributor } from '~/server/services/contributor/types/UserContributor';
 import { Button } from '../ui/button/button';
+import type { UserComitteeMember } from '~/server/services/comittee-member/types/comittee-member';
 
 export const useActionRemoveContributor = globalAction$(
-  async (values) => {
+  async () => {
     // delete one contributor from the project contributors
-    await removeOneContributor(values.projectId, values.userId);
+    // await removeOneContributor(values.projectId, values.userId);
 
     return {
       success: true,
@@ -20,13 +19,13 @@ export const useActionRemoveContributor = globalAction$(
 );
 
 type Props = {
-  contributor: UserContributor;
+  contributor: UserComitteeMember;
   projectId: string;
   authorId: string;
   userAuthId: string;
 };
 
-export default component$(
+export const ComitteeMember = component$(
   ({ contributor, projectId, authorId, userAuthId }: Props) => {
     const actionRemoveContributor = useActionRemoveContributor();
     return (
