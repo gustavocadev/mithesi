@@ -86,7 +86,7 @@ export default component$(() => {
     <>
       <h1 class="text-4xl font-bold">
         Añadir Colaborador(a) al Proyecto de tesis:{' '}
-        <span class="font-semibold">{loaderProject.value.project?.title}</span>
+        <span class="font-semibold">{loaderProject.value.project.title}</span>
       </h1>
 
       <div class="mt-10 flex justify-center">
