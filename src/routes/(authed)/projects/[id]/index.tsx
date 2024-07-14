@@ -4,10 +4,9 @@ import { ComitteeMember } from '~/components/project/ComitteeMember';
 import { Button } from '~/components/ui/button/button';
 import { handleRequest } from '~/server/db/lucia';
 import { findOneThesisProject } from '~/server/services/project/project';
-import { findOneUser } from '~/server/services/user/user';
 import { LuArrowLeft } from '@qwikest/icons/lucide';
 import { ProjectPost } from '~/components/project/ProjectPost';
-import { findContributorsByProjectId } from '~/server/services/comittee-member/comittee-member';
+import { findCommitteeMembersByProjectId } from '~/server/services/comittee-member/comittee-member';
 
 export const useLoaderProject = routeLoader$(async ({ params }) => {
   // the project data
@@ -18,9 +17,9 @@ export const useLoaderProject = routeLoader$(async ({ params }) => {
   };
 });
 
-export const useLoaderContributors = routeLoader$(async ({ params }) => {
+export const useCommitteeMembers = routeLoader$(async ({ params }) => {
   // all the contributors that belong to the project
-  const contributors = await findContributorsByProjectId(params.id);
+  const contributors = await findCommitteeMembersByProjectId(params.id);
 
   return {
     contributors,
@@ -29,11 +28,8 @@ export const useLoaderContributors = routeLoader$(async ({ params }) => {
 
 export const useLoaderUserAuth = routeLoader$(async ({ cookie, redirect }) => {
   const authRequest = handleRequest({ cookie });
-  const { session } = await authRequest.validateUser();
-
-  if (!session) throw redirect(303, '/');
-
-  const user = await findOneUser(session.userId);
+  const { user } = await authRequest.validateUser();
+  if (!user) throw redirect(303, '/');
 
   return {
     user,
@@ -42,7 +38,7 @@ export const useLoaderUserAuth = routeLoader$(async ({ cookie, redirect }) => {
 
 export default component$(() => {
   const loaderProject = useLoaderProject();
-  const loaderContributors = useLoaderContributors();
+  const loaderContributors = useCommitteeMembers();
   const loaderUserAuth = useLoaderUserAuth();
 
   return (
@@ -93,6 +89,11 @@ export default component$(() => {
         urlPdf={loaderProject.value.project.urlPdf}
         projectStatus={loaderProject.value.project.status}
         urlImg={loaderProject.value.project.urlImg}
+        authorName={
+          loaderProject.value.project.user.name +
+          ' ' +
+          loaderProject.value.project.user.lastName
+        }
       />
 
       <div class="flex items-center justify-between mt-10">
