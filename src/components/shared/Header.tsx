@@ -24,10 +24,10 @@ export const Header = component$(() => {
     <header class="px-4 py-5 bg-white border-b">
       <nav class="md:flex md:justify-between items-center">
         <Link
-          href="/projects"
+          href="/projects/"
           class="text-4xl text-secondary font-black text-center"
         >
-          Mithesi {isOnline ? '🟢' : '🔴'}
+          Mithesi {isOnline.value ? '🟢' : '🔴'}
         </Link>
 
         <div class="flex flex-col md:flex-row items-center gap-4">
