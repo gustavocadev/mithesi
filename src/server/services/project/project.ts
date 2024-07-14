@@ -1,4 +1,4 @@
-import { eq, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '~/server/db/db';
 import { thesisProject, userTable } from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
@@ -8,10 +8,17 @@ export const findOneThesisProject = async (
   projectId: string
 ): Promise<Project> => {
   const [projectFound] = await db
-    .select()
+    .select({
+      project: thesisProject,
+      user: userTable,
+    })
     .from(thesisProject)
     .where(eq(thesisProject.id, projectId));
-  return projectFound;
+
+  return {
+    ...projectFound.project,
+    user: projectFound.user,
+  };
 };
 
 export const findProjectsByUserId = async (
@@ -19,22 +26,21 @@ export const findProjectsByUserId = async (
 ): Promise<Project[]> => {
   const projectsByUser = await db
     .select({
-      id: thesisProject.id,
-      title: thesisProject.title,
-      description: thesisProject.description,
-      userId: thesisProject.userId,
-      urlImg: thesisProject.urlImg,
-      urlPdf: thesisProject.urlPdf,
-      status: thesisProject.status,
-      createdAt: thesisProject.createdAt,
-      updatedAt: thesisProject.updatedAt,
+      projects: thesisProject,
       user: userTable,
     })
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .where(eq(thesisProject.userId, userId));
 
-  return projectsByUser;
+  const projects = projectsByUser.map((project) => {
+    return {
+      ...project.projects,
+      user: project.user,
+    };
+  });
+
+  return projects;
 };
 
 export const createProject = async ({
