@@ -13,6 +13,7 @@ export const findOneThesisProject = async (
       user: userTable,
     })
     .from(thesisProject)
+    .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .where(eq(thesisProject.id, projectId));
 
   return {
