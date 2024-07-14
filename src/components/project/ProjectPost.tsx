@@ -1,21 +1,22 @@
-import { component$, type QRL } from '@builder.io/qwik';
+import { component$, type PropsOf } from '@builder.io/qwik';
 import { Card } from '../ui/card/card';
 import { Badge } from '~/components/ui/badge/badge';
 import { Button } from '~/components/ui/button/button';
 import { LuMessageCircle, LuThumbsUp, LuShare2 } from '@qwikest/icons/lucide';
 import type { SelectProject } from '~/server/db/schema';
 import { formatDate } from '~/utils/formatDate';
+import { cn } from '@qwik-ui/utils';
 
-export interface ProjectPostProps {
+export type ProjectPostProps = {
   id: string;
   title: string;
   description: string;
   createdAt: Date;
   urlPdf: string;
   urlImg?: string | null;
-  onClick$?: QRL<() => void>;
   projectStatus: SelectProject['status'];
-}
+  authorName: string;
+} & PropsOf<'div'>;
 
 export const ProjectPost = component$<ProjectPostProps>(
   ({
@@ -23,25 +24,29 @@ export const ProjectPost = component$<ProjectPostProps>(
     description,
     urlPdf,
     createdAt,
-    onClick$,
     projectStatus,
     urlImg,
+    authorName,
+    ...props
   }) => {
     return (
       <Card.Root
-        class="rounded-none border-b-2 border-gray-100 border cursor-pointer"
-        onClick$={onClick$}
+        class={cn(
+          'rounded-none border-b-2 border-gray-100 border cursor-pointer',
+          props.class
+        )}
+        {...props}
       >
         <Card.Header>
           <div class="flex items-start justify-between gap-4">
-            <div class="grid gap-2">
+            <div class="space-y-2">
               <Card.Title class="text-3xl font-bold">{title}</Card.Title>
               <Card.Description>{description}</Card.Description>
             </div>
             <a
               href={urlPdf}
               target="_blank"
-              class="text-primary hover:underline"
+              class="text-primary hover:underline flex-shrink-0"
             >
               Ver PDF
             </a>
@@ -50,7 +55,7 @@ export const ProjectPost = component$<ProjectPostProps>(
         <Card.Content>
           <div class="flex items-center justify-between text-sm text-muted-foreground">
             <div>Publicado el {formatDate(createdAt)}</div>
-            <div>Por John Doe</div>
+            <div>Por {authorName}</div>
           </div>
           {urlImg && (
             <figure class="mt-4">
