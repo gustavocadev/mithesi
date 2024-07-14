@@ -24,9 +24,9 @@ export const useLoaderProjects = routeLoader$(
     const projectsByUserMapped = projectsByUser.map((project) => ({
       ...project,
       user: {
-        id: project.user?.id,
-        name: project.user?.name,
-        lastName: project.user?.lastName,
+        id: project.user.id,
+        name: project.user.name,
+        lastName: project.user.lastName,
       },
     }));
 
