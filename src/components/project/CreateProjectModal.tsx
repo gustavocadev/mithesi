@@ -9,6 +9,7 @@ import { globalAction$, z, zod$, Form } from '@builder.io/qwik-city';
 import { createProject } from '~/server/services/project/project';
 import { handleRequest } from '~/server/db/lucia';
 import { toast } from 'qwik-sonner';
+import { uploadFile } from '~/server/utils/utils';
 
 export const useCreateProjectAction = globalAction$(
   async (values, event) => {
@@ -16,14 +17,16 @@ export const useCreateProjectAction = globalAction$(
     const { user } = await authRequest.validateUser();
     if (!user) throw event.redirect(303, '/login');
 
-    const urlPdf = '';
-    const urlImage = '';
+    const urlPdf = await uploadFile(values.pdf);
+    if (!urlPdf) throw new Error('Error uploading file');
+
+    const urlImage = await uploadFile(values.image);
 
     await createProject({
       description: values.description,
       title: values.title,
       urlImg: urlImage,
-      urlPdf: urlPdf,
+      urlPdf,
       userId: user.id,
     });
 
@@ -32,7 +35,7 @@ export const useCreateProjectAction = globalAction$(
   zod$({
     title: z.string().min(1).max(100),
     description: z.string().min(1).max(1000),
-    image: z.any(),
+    image: z.any().optional(),
     pdf: z.any(),
   })
 );
