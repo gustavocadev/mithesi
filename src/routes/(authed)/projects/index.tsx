@@ -3,7 +3,6 @@ import { ProjectPost } from '~/components/project/ProjectPost';
 import { type DocumentHead, routeLoader$ } from '@builder.io/qwik-city';
 import { handleRequest } from '~/server/db/lucia';
 import { findProjectsByUserId } from '~/server/services/project/project';
-import { findOneUser } from '~/server/services/user/user';
 import { Button } from '~/components/ui/button/button';
 import { Card } from '~/components/ui/card/card';
 import { ProjectContext } from '~/context/project/ProjectContext';
@@ -12,20 +11,30 @@ import { useNavigate } from '@builder.io/qwik-city';
 export const useLoaderProjects = routeLoader$(
   async ({ url, cookie, redirect }) => {
     const authRequest = handleRequest({ cookie });
-    const { session } = await authRequest.validateUser();
-    if (!session) throw redirect(303, '/login');
+    const { user } = await authRequest.validateUser();
+    if (!user) throw redirect(303, '/login');
 
     // get all the projects that the user is the author or contributor
-    const projectsByUser = await findProjectsByUserId(session.userId);
+    const projectsByUser = await findProjectsByUserId(user.id);
 
     // search for params if there is a search param
     const projectName = url.searchParams.get('search');
 
+    // map the projects to remove the user password and email
+    const projectsByUserMapped = projectsByUser.map((project) => ({
+      ...project,
+      user: {
+        id: project.user?.id,
+        name: project.user?.name,
+        lastName: project.user?.lastName,
+      },
+    }));
+
     // if there is a search param, filter the projects by the search param
     if (projectName) {
-      const projects = projectsByUser.filter((project) => {
-        return project.title.toLowerCase().includes(projectName.toLowerCase());
-      });
+      const projects = projectsByUserMapped.filter((project) =>
+        project.title.toLowerCase().includes(projectName.toLowerCase())
+      );
 
       return {
         projectsByUser: projects,
@@ -35,26 +44,10 @@ export const useLoaderProjects = routeLoader$(
     // if there is no search param, return all the projects
 
     return {
-      projectsByUser,
+      projectsByUser: projectsByUserMapped,
     };
   }
 );
-
-export const userLoaderUser = routeLoader$(async (event) => {
-  const authRequest = handleRequest(event);
-  const { session } = await authRequest.validateUser();
-  if (!session) {
-    return {
-      error: 'Not logged in',
-    };
-  }
-
-  const user = await findOneUser(session.userId);
-
-  return {
-    user,
-  };
-});
 
 export default component$(() => {
   const loaderProjects = useLoaderProjects();
@@ -89,6 +82,7 @@ export default component$(() => {
           urlImg={project.urlImg}
           projectStatus={project.status}
           onClick$={async () => await nav('/projects/' + project.id + '/')}
+          authorName={project.user?.name + ' ' + project.user?.lastName}
         />
       ))}
     </Card.Root>
