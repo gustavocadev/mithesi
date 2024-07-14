@@ -102,8 +102,8 @@ export const thesisProject = pgTable('thesis_project', {
   urlPdf: text('url_pdf').notNull(),
   urlImg: text('url_img'),
   status: text('status').notNull().default('pending'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at'),
 
   // the author of the project
   userId: text('user_id')
