@@ -1,6 +1,6 @@
 import { eq, or } from 'drizzle-orm';
 import { db } from '~/server/db/db';
-import { thesisProject } from '~/server/db/schema';
+import { thesisProject, userTable } from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
 import { Project } from './entities/project';
 
@@ -28,9 +28,11 @@ export const findProjectsByUserId = async (
       status: thesisProject.status,
       createdAt: thesisProject.createdAt,
       updatedAt: thesisProject.updatedAt,
+      user: userTable,
     })
     .from(thesisProject)
-    .where(or(eq(thesisProject.userId, userId)));
+    .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
+    .where(eq(thesisProject.userId, userId));
 
   return projectsByUser;
 };
