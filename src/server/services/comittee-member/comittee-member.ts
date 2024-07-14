@@ -3,7 +3,7 @@ import { db } from '~/server/db/db';
 import { committeeMember, thesisProject, userTable } from '~/server/db/schema';
 import { UserComitteeMember } from './types/comittee-member';
 
-export const findContributorsByProjectId = async (
+export const findCommitteeMembersByProjectId = async (
   projectId: string
 ): Promise<UserComitteeMember[]> => {
   const contributors = await db
