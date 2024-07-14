@@ -1,7 +1,5 @@
 import { component$, Slot } from '@builder.io/qwik';
 import type { RequestHandler } from '@builder.io/qwik-city';
-import { ProjectProvider } from '~/context/project/ProjectProvider';
-import { SocketProvider } from '~/context/socket/SocketProvider';
 import { handleRequest } from '~/server/db/lucia';
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -25,11 +23,5 @@ export const onRequest: RequestHandler = async ({ cookie, sharedMap }) => {
 };
 
 export default component$(() => {
-  return (
-    <SocketProvider>
-      <ProjectProvider>
-        <Slot />
-      </ProjectProvider>
-    </SocketProvider>
-  );
+  return <Slot />;
 });
