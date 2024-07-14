@@ -1,3 +1,5 @@
-import type { SelectUser } from '~/server/db/schema';
+import type { SelectProject, SelectUser } from '~/server/db/schema';
 
-export type User = SelectUser;
+export type User = SelectUser & {
+  projects?: SelectProject[];
+};
