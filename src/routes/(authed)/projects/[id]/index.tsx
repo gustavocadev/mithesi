@@ -29,12 +29,9 @@ export const useLoaderContributors = routeLoader$(async ({ params }) => {
 
 export const useLoaderUserAuth = routeLoader$(async ({ cookie, redirect }) => {
   const authRequest = handleRequest({ cookie });
-
   const { session } = await authRequest.validateUser();
 
-  if (!session) {
-    throw redirect(303, '/');
-  }
+  if (!session) throw redirect(303, '/');
 
   const user = await findOneUser(session.userId);
 
@@ -61,8 +58,8 @@ export default component$(() => {
           </Button>
         </Link>
 
-        {loaderUserAuth.value.user?.id ===
-          loaderProject.value.project?.userId && (
+        {loaderUserAuth.value.user.id ===
+          loaderProject.value.project.userId && (
           <div class="flex items-center gap-2 text-gray-400 hover:text-black">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +78,7 @@ export default component$(() => {
 
             <Link
               class="uppercase font-bold"
-              href={`/projects/edit/${loaderProject.value.project?.id}`}
+              href={`/projects/edit/${loaderProject.value.project.id}`}
             >
               Editar
             </Link>
@@ -89,16 +86,19 @@ export default component$(() => {
         )}
       </div>
       <ProjectPost
-        createdAt={loaderProject.value.project?.createdAt}
-        description={loaderProject.value.project?.description}
-        name={loaderProject.value.project?.title}
-        id={loaderProject.value.project?.id}
+        createdAt={loaderProject.value.project.createdAt}
+        description={loaderProject.value.project.description}
+        title={loaderProject.value.project.title}
+        id={loaderProject.value.project.id}
+        urlPdf={loaderProject.value.project.urlPdf}
+        projectStatus={loaderProject.value.project.status}
+        urlImg={loaderProject.value.project.urlImg}
       />
 
       <div class="flex items-center justify-between mt-10">
         <p class="font-bold text-xl">Miembros del jurado</p>
-        {loaderUserAuth.value.user?.id ===
-          loaderProject.value.project?.userId && (
+        {loaderUserAuth.value.user.id ===
+          loaderProject.value.project.userId && (
           <Button
             look="link"
             class="uppercase font-bold text-gray-400 hover:text-black hover:no-underline"
@@ -112,8 +112,8 @@ export default component$(() => {
         )}
       </div>
       <div>
-        {loaderContributors.value?.contributors.length ? (
-          loaderContributors.value?.contributors.map((contributor) => (
+        {loaderContributors.value.contributors.length ? (
+          loaderContributors.value.contributors.map((contributor) => (
             <ComitteeMember
               contributor={contributor}
               key={contributor.id}
@@ -126,7 +126,6 @@ export default component$(() => {
           <p class="text-center my-5 p-10">No hay miembros del jurado</p>
         )}
       </div>
-      {/* <ModalFormTask /> */}
     </div>
   );
 });
