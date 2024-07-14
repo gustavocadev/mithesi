@@ -7,34 +7,38 @@ import { findOneUser } from '~/server/services/user/user';
 import { Button } from '~/components/ui/button/button';
 import { Card } from '~/components/ui/card/card';
 import { ProjectContext } from '~/context/project/ProjectContext';
+import { useNavigate } from '@builder.io/qwik-city';
 
-export const useLoaderProjects = routeLoader$(async (event) => {
-  const authRequest = handleRequest(event);
-  const { session } = await authRequest.validateUser();
-  if (!session) throw event.redirect(303, '/login');
+export const useLoaderProjects = routeLoader$(
+  async ({ url, cookie, redirect }) => {
+    const authRequest = handleRequest({ cookie });
+    const { session } = await authRequest.validateUser();
+    if (!session) throw redirect(303, '/login');
 
-  // get all the projects that the user is the author or contributor
-  const projectsByUser = await findProjectsByUserId(session.userId);
+    // get all the projects that the user is the author or contributor
+    const projectsByUser = await findProjectsByUserId(session.userId);
 
-  // search for params if there is a search param
-  const projectName = event.url.searchParams.get('search');
+    // search for params if there is a search param
+    const projectName = url.searchParams.get('search');
 
-  // if there is a search param, filter the projects by the search param
-  if (projectName) {
-    const projects = projectsByUser.filter((project) => {
-      return project.title.toLowerCase().includes(projectName.toLowerCase());
-    });
+    // if there is a search param, filter the projects by the search param
+    if (projectName) {
+      const projects = projectsByUser.filter((project) => {
+        return project.title.toLowerCase().includes(projectName.toLowerCase());
+      });
+
+      return {
+        projectsByUser: projects,
+      };
+    }
+
+    // if there is no search param, return all the projects
 
     return {
-      projectsByUser: projects,
+      projectsByUser,
     };
   }
-
-  // if there is no search param, return all the projects
-  return {
-    projectsByUser,
-  };
-});
+);
 
 export const userLoaderUser = routeLoader$(async (event) => {
   const authRequest = handleRequest(event);
@@ -55,9 +59,10 @@ export const userLoaderUser = routeLoader$(async (event) => {
 export default component$(() => {
   const loaderProjects = useLoaderProjects();
   const { showCreateProjectModal } = useContext(ProjectContext);
+  const nav = useNavigate();
 
   return (
-    <Card.Root class="w-4/12 mx-auto rounded-xl">
+    <Card.Root class="w-full md:w-8/12 xl:w-4/12 mx-auto rounded-xl">
       <section class="flex items-center py-3 px-6">
         <p
           class="flex-1 text-gray-400 text-md cursor-text"
@@ -73,13 +78,17 @@ export default component$(() => {
           Post
         </Button>
       </section>
-      {loaderProjects.value?.projectsByUser?.map((project) => (
+      {loaderProjects.value.projectsByUser.map((project) => (
         <ProjectPost
           key={project.id}
           createdAt={project.createdAt}
           description={project.description}
           id={project.id}
-          name={project.title}
+          title={project.title}
+          urlPdf={project.urlPdf}
+          urlImg={project.urlImg}
+          projectStatus={project.status}
+          onClick$={async () => await nav('/projects/' + project.id + '/')}
         />
       ))}
     </Card.Root>
