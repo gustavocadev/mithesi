@@ -9,7 +9,7 @@ import { globalAction$, z, zod$, Form } from '@builder.io/qwik-city';
 import { createProject } from '~/server/services/project/project';
 import { handleRequest } from '~/server/db/lucia';
 import { toast } from 'qwik-sonner';
-import { uploadFile } from '~/server/utils/utils';
+import { uploadFile } from '~/server/utils/uploadFile';
 
 export const useCreateProjectAction = globalAction$(
   async (values, event) => {
