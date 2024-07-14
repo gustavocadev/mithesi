@@ -9,6 +9,9 @@ import {
 } from 'drizzle-orm/pg-core';
 import { generateIdFromEntropySize } from 'lucia';
 
+export const roleNames = ['admin', 'user'] as const;
+const roleEnum = pgEnum('roleEnum', roleNames);
+
 export const userTable = pgTable('user', {
   id: text('id')
     .primaryKey()
@@ -28,6 +31,8 @@ export const userTable = pgTable('user', {
 
   isConfirmed: boolean('is_confirmed').notNull().default(false),
   token: text('token'),
+
+  role: varchar('role').notNull().default('user'),
 
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
@@ -50,42 +55,6 @@ export const sessionTable = pgTable('session', {
 });
 
 export type SelectSession = typeof sessionTable.$inferSelect;
-
-export const userRole = pgTable('user_role', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => generateIdFromEntropySize(10)),
-  userId: text('user_id')
-    .references(() => userTable.id)
-    .notNull(),
-  roleId: text('role_id').notNull(),
-});
-export type SelectUserRole = typeof userRole.$inferSelect;
-
-export const userRoleRelations = relations(userRole, ({ one }) => ({
-  user: one(userTable, {
-    fields: [userRole.userId],
-    references: [userTable.id],
-  }),
-  role: one(role, {
-    fields: [userRole.roleId],
-    references: [role.id],
-  }),
-}));
-
-export const roleNames = ['admin', 'user'] as const;
-// const roleEnum = pgEnum('roleEnum', roleNames);
-export const role = pgTable('role', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => generateIdFromEntropySize(10)),
-  name: text('name').notNull().default('user'),
-});
-export type SelectRole = typeof role.$inferSelect;
-
-export const roleRelations = relations(role, ({ many }) => ({
-  userRole: many(userRole),
-}));
 
 const thesisProjectStatus = ['pending', 'approved', 'rejected'] as const;
 const thesisProjectStatusEnum = pgEnum(
