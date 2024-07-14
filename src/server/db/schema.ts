@@ -6,6 +6,7 @@ import {
   timestamp,
   boolean,
   pgEnum,
+  unique,
 } from 'drizzle-orm/pg-core';
 import { generateIdFromEntropySize } from 'lucia';
 
@@ -93,7 +94,7 @@ export const thesisProjectRelations = relations(
   })
 );
 
-export const committeeMember = pgTable('contributor', {
+export const committeeMember = pgTable('committee_member', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => generateIdFromEntropySize(10)),
@@ -152,24 +153,30 @@ export const commentRelations = relations(comment, ({ one, many }) => ({
   }),
 }));
 
-export const like = pgTable('like', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => generateIdFromEntropySize(10)),
-  userId: text('user_id')
-    .references(() => userTable.id)
-    .notNull(),
-  thesisProjectId: text('thesis_project_id').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-});
+export const userLike = pgTable(
+  'user_like',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => generateIdFromEntropySize(10)),
+    userId: text('user_id')
+      .references(() => userTable.id)
+      .notNull(),
+    thesisProjectId: text('thesis_project_id').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (t) => ({
+    first: unique().on(t.userId, t.thesisProjectId),
+  })
+);
 
-export const likeRelations = relations(like, ({ one }) => ({
+export const likeRelations = relations(userLike, ({ one }) => ({
   user: one(userTable, {
-    fields: [like.userId],
+    fields: [userLike.userId],
     references: [userTable.id],
   }),
   thesisProject: one(thesisProject, {
-    fields: [like.thesisProjectId],
+    fields: [userLike.thesisProjectId],
     references: [thesisProject.id],
   }),
 }));
