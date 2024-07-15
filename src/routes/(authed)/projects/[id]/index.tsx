@@ -1,5 +1,10 @@
 import { component$ } from '@builder.io/qwik';
-import { type DocumentHead, Link, routeLoader$ } from '@builder.io/qwik-city';
+import {
+  type DocumentHead,
+  Link,
+  routeLoader$,
+  useNavigate,
+} from '@builder.io/qwik-city';
 import { ComitteeMember } from '~/components/project/ComitteeMember';
 import { Button } from '~/components/ui/button/button';
 import { handleRequest } from '~/server/db/lucia';
@@ -40,19 +45,21 @@ export default component$(() => {
   const loaderProject = useLoaderProject();
   const loaderContributors = useCommitteeMembers();
   const loaderUserAuth = useLoaderUserAuth();
+  const nav = useNavigate();
 
   return (
     <div class="space-y-4 mx-auto w-4/12">
       <div class="flex justify-between">
-        <Link href="/projects/">
-          <Button
-            look="ghost"
-            size="icon"
-            class="rounded-full hover:bg-gray-200"
-          >
-            <LuArrowLeft class="w-5 h-5" />
-          </Button>
-        </Link>
+        <Button
+          look="ghost"
+          size="icon"
+          class="rounded-full hover:bg-gray-200"
+          onClick$={() => {
+            nav('/projects');
+          }}
+        >
+          <LuArrowLeft class="w-5 h-5" />
+        </Button>
 
         {loaderUserAuth.value.user.id ===
           loaderProject.value.project.userId && (
@@ -94,6 +101,8 @@ export default component$(() => {
           ' ' +
           loaderProject.value.project.user.lastName
         }
+        userLikeId={loaderProject.value.project.userLike?.id}
+        likes={loaderProject.value.project.likes}
       />
 
       <div class="flex items-center justify-between mt-10">
