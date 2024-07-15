@@ -6,9 +6,8 @@ import { findProjectsByUserId } from '~/server/services/project/project';
 import { Button } from '~/components/ui/button/button';
 import { Card } from '~/components/ui/card/card';
 import { ProjectContext } from '~/context/project/ProjectContext';
-import { useNavigate } from '@builder.io/qwik-city';
 
-export const useLoaderProjects = routeLoader$(
+export const useProjectsLoader = routeLoader$(
   async ({ url, cookie, redirect }) => {
     const authRequest = handleRequest({ cookie });
     const { user } = await authRequest.validateUser();
@@ -28,7 +27,9 @@ export const useLoaderProjects = routeLoader$(
         name: project.user.name,
         lastName: project.user.lastName,
       },
+      likes: project.likes,
     }));
+    console.log(projectsByUserMapped);
 
     // if there is a search param, filter the projects by the search param
     if (projectName) {
@@ -36,23 +37,18 @@ export const useLoaderProjects = routeLoader$(
         project.title.toLowerCase().includes(projectName.toLowerCase())
       );
 
-      return {
-        projectsByUser: projects,
-      };
+      return projects;
     }
 
     // if there is no search param, return all the projects
 
-    return {
-      projectsByUser: projectsByUserMapped,
-    };
+    return projectsByUserMapped;
   }
 );
 
 export default component$(() => {
-  const loaderProjects = useLoaderProjects();
+  const projects = useProjectsLoader();
   const { showCreateProjectModal } = useContext(ProjectContext);
-  const nav = useNavigate();
 
   return (
     <Card.Root class="w-full md:w-8/12 xl:w-4/12 mx-auto rounded-xl">
@@ -71,7 +67,7 @@ export default component$(() => {
           Post
         </Button>
       </section>
-      {loaderProjects.value.projectsByUser.map((project) => (
+      {projects.value.map((project) => (
         <ProjectPost
           key={project.id}
           createdAt={project.createdAt}
@@ -81,8 +77,9 @@ export default component$(() => {
           urlPdf={project.urlPdf}
           urlImg={project.urlImg}
           projectStatus={project.status}
-          onClick$={async () => await nav('/projects/' + project.id + '/')}
-          authorName={project.user?.name + ' ' + project.user?.lastName}
+          authorName={project.user.name + ' ' + project.user.lastName}
+          userLikeId={project.userLike?.id}
+          likes={project.likes}
         />
       ))}
     </Card.Root>
