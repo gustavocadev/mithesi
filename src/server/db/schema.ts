@@ -169,6 +169,7 @@ export const userLike = pgTable(
     first: unique().on(t.userId, t.thesisProjectId),
   })
 );
+export type SelectUserLike = typeof userLike.$inferSelect;
 
 export const likeRelations = relations(userLike, ({ one }) => ({
   user: one(userTable, {
