@@ -26,6 +26,7 @@ export const Header = component$(() => {
         <Link
           href="/projects/"
           class="text-4xl text-secondary font-black text-center"
+          prefetch
         >
           Mithesi {isOnline.value ? '🟢' : '🔴'}
         </Link>
