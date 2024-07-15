@@ -1,4 +1,4 @@
-import { component$, useContext } from '@builder.io/qwik';
+import { $, component$, useContext } from '@builder.io/qwik';
 import { Modal } from '../ui/modal/modal';
 import { ProjectContext } from '~/context/project/ProjectContext';
 import { Label } from '../ui/label/label';
@@ -52,10 +52,10 @@ export const CreateProjectModal = component$(() => {
         </Modal.Description>
         <Form
           action={createProjectAction}
-          onSubmitCompleted$={() => {
+          onSubmitCompleted$={$(() => {
             showCreateProjectModal.value = false;
             toast.success('Proyecto creado con exito');
-          }}
+          })}
         >
           <div class="grid gap-4 py-4">
             <div class="space-y-2">
