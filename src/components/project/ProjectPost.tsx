@@ -65,10 +65,11 @@ export const ProjectPost = component$<ProjectPostProps>(
 
       // to update the project object with the new value only if we are in the project page
       const projectId = loc.params.id;
+      const isLiked = project.isLiked;
 
       const likePost = () =>
         likeProjectAction.submit({
-          intent: project.isLiked ? 'deleteLike' : 'createLike',
+          intent: isLiked ? 'deleteLike' : 'createLike',
           id: project.id,
         });
 
