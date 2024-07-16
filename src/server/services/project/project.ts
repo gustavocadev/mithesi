@@ -1,4 +1,4 @@
-import { count, eq } from 'drizzle-orm';
+import { count, eq, sql } from 'drizzle-orm';
 import { db } from '~/server/db/db';
 import { thesisProject, userLike, userTable } from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
@@ -10,9 +10,14 @@ export const findOneThesisProject = async (
   const [projectFound] = await db
     .select({
       project: thesisProject,
-      user: userTable,
-      userLike: userLike,
+      user: {
+        id: userTable.id,
+        name: userTable.name,
+        lastName: userTable.lastName,
+        role: userTable.role,
+      },
       likes: count(userLike.id),
+      isLiked: sql<boolean>`CASE WHEN ${userLike.id} IS NOT NULL THEN TRUE ELSE FALSE END`,
     })
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
@@ -23,8 +28,8 @@ export const findOneThesisProject = async (
   return {
     ...projectFound.project,
     user: projectFound.user,
-    userLike: projectFound.userLike,
     likes: projectFound.likes,
+    isLiked: projectFound.isLiked,
   };
 };
 
@@ -34,9 +39,14 @@ export const findProjectsByUserId = async (
   const projectsByUser = await db
     .select({
       projects: thesisProject,
-      user: userTable,
-      userLike: userLike,
+      user: {
+        id: userTable.id,
+        name: userTable.name,
+        lastName: userTable.lastName,
+        role: userTable.role,
+      },
       likes: count(userLike.id),
+      isLiked: sql<boolean>`CASE WHEN ${userLike.id} IS NOT NULL THEN TRUE ELSE FALSE END`,
     })
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
@@ -48,8 +58,8 @@ export const findProjectsByUserId = async (
     return {
       ...project.projects,
       user: project.user,
-      userLike: project.userLike,
       likes: project.likes,
+      isLiked: project.isLiked,
     };
   });
 
