@@ -1,46 +1,47 @@
-import { component$, type PropsOf } from '@builder.io/qwik';
+import { $, component$, useContext, type PropsOf } from '@builder.io/qwik';
 import { Card } from '../ui/card/card';
 import { Badge } from '~/components/ui/badge/badge';
 import { Button } from '~/components/ui/button/button';
 import { LuMessageCircle, LuShare2 } from '@qwikest/icons/lucide';
 import { TbHeart, TbHeartFilled } from '@qwikest/icons/tablericons';
 
-import { type SelectProject } from '~/server/db/schema';
 import { formatDate } from '~/utils/formatDate';
 import { cn } from '@qwik-ui/utils';
-import {
-  Form,
-  globalAction$,
-  useNavigate,
-  z,
-  zod$,
-} from '@builder.io/qwik-city';
+import { globalAction$, useLocation, z, zod$ } from '@builder.io/qwik-city';
 import {
   createUserLike,
   deleteUserLike,
 } from '~/server/services/user-like/user-like';
-import { handleRequest } from '~/server/db/lucia';
+import type { User } from 'lucia';
+import type { Project } from '~/server/services/project/entities/project';
+import { ProjectContext } from '~/context/project/ProjectContext';
 
 export const useLikeProjectAction = globalAction$(
-  async (values, { cookie, redirect }) => {
-    const authRequest = handleRequest({ cookie });
-    const { user } = await authRequest.validateUser();
-    if (!user) throw redirect(303, '/login');
+  async (values, { redirect, sharedMap }) => {
+    try {
+      const user = sharedMap.get('user') as User;
+      if (!user) throw redirect(303, '/login');
 
-    if (values.intent === 'createLike') {
-      await createUserLike({
-        projectId: values.id,
-        userId: user.id,
-      });
+      if (values.intent === 'createLike') {
+        await createUserLike({
+          projectId: values.id,
+          userId: user.id,
+        });
+      }
+
+      if (values.intent === 'deleteLike') {
+        await deleteUserLike(values.id);
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+      };
     }
-
-    if (values.intent === 'deleteLike') {
-      await deleteUserLike(values.id);
-    }
-
-    return {};
   },
-
   zod$({
     intent: z.enum(['createLike', 'deleteLike']),
     id: z.string(),
@@ -48,71 +49,95 @@ export const useLikeProjectAction = globalAction$(
 );
 
 export type ProjectPostProps = {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: Date;
-  urlPdf: string;
-  urlImg?: string | null;
-  projectStatus: SelectProject['status'];
-  authorName: string;
-  userLikeId?: string | null;
-  likes: number;
+  project: Project;
 } & PropsOf<'div'>;
 
 export const ProjectPost = component$<ProjectPostProps>(
-  ({
-    id,
-    title,
-    description,
-    urlPdf,
-    createdAt,
-    projectStatus,
-    urlImg,
-    authorName,
-    userLikeId,
-    likes,
-    ...props
-  }) => {
+  ({ project, ...props }) => {
     const likeProjectAction = useLikeProjectAction();
-    const nav = useNavigate();
+    const { projectSelected, projects } = useContext(ProjectContext);
+    const loc = useLocation();
+
+    const handleLikePost = $(async (e: PointerEvent) => {
+      // to prevent redirecting to the project page
+      // !important inside here we need to use the `project object` otherwise the value won't be updated
+      e.stopPropagation();
+
+      // to update the project object with the new value only if we are in the project page
+      const projectId = loc.params.id;
+
+      const likePost = () =>
+        likeProjectAction.submit({
+          intent: project.isLiked ? 'deleteLike' : 'createLike',
+          id: project.id,
+        });
+
+      // optimistic update for the project page
+      if (projectId) {
+        projectSelected.value = {
+          ...project,
+          isLiked: !project.isLiked,
+          likes: project.isLiked ? project.likes - 1 : project.likes + 1,
+        };
+
+        await likePost();
+        return;
+      }
+
+      // optimistic update for the project list
+      projects.value = projects.value.map((projectElement) => {
+        if (projectElement.id === project.id) {
+          return {
+            ...projectElement,
+            isLiked: !projectElement.isLiked,
+            likes: projectElement.isLiked
+              ? projectElement.likes - 1
+              : projectElement.likes + 1,
+          };
+        }
+        return projectElement;
+      });
+
+      const likeProjectActionResponse = await likePost();
+      // if the action fails, we need to revert the optimistic update
+      // this case ins't much important because nobody will die if the like button doesn't work
+      // but eventually we need to handle this case
+      console.log(likeProjectActionResponse);
+    });
 
     return (
       <Card.Root
         class={cn(
-          'rounded-none border-b-2 border-gray-100 border cursor-pointer',
+          'rounded-none border-b-2 border-gray-100 border',
           props.class
         )}
         {...props}
-        onClick$={() => nav('/projects/' + id + '/')}
       >
         <Card.Header>
-          <div class="flex items-start justify-between gap-4">
-            <div class="space-y-2">
-              <Card.Title class="text-3xl font-bold">{title}</Card.Title>
-              <Card.Description>{description}</Card.Description>
-            </div>
+          <div class="space-y-2">
+            <Card.Title class="text-3xl font-bold">{project.title}</Card.Title>
             <a
-              href={urlPdf}
+              href={project.urlPdf}
               target="_blank"
-              class="text-primary hover:underline flex-shrink-0"
+              class="text-primary hover:underline flex-shrink-0 uppercase font-semibold"
               onClick$={(e) => {
                 e.stopPropagation();
               }}
             >
-              Ver PDF
+              Descargar PDF
             </a>
+            <Card.Description>{project.description}</Card.Description>
           </div>
         </Card.Header>
         <Card.Content>
           <div class="flex items-center justify-between text-sm text-muted-foreground">
-            <div>Publicado el {formatDate(createdAt)}</div>
-            <div>Por {authorName}</div>
+            <div>Publicado el {formatDate(project.createdAt)}</div>
+            <div>Por {project.user.name}</div>
           </div>
-          {urlImg && (
+          {project.urlImg && (
             <figure class="mt-4">
               <img
-                src={urlImg}
+                src={project.urlImg}
                 alt="Imagen del artículo"
                 width={800}
                 height={200}
@@ -122,17 +147,17 @@ export const ProjectPost = component$<ProjectPostProps>(
           )}
           <div class="mt-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              {projectStatus === 'pending' && (
+              {project.status === 'pending' && (
                 <Badge look="outline" class="bg-yellow-500 text-white">
                   Pendiente
                 </Badge>
               )}
-              {projectStatus === 'approved' && (
+              {project.status === 'approved' && (
                 <Badge look="outline" class="bg-green-500 text-white">
                   Aprobado
                 </Badge>
               )}
-              {projectStatus === 'rejected' && (
+              {project.status === 'rejected' && (
                 <Badge look="outline" class="bg-red-500 text-white">
                   Reprobado
                 </Badge>
@@ -141,34 +166,24 @@ export const ProjectPost = component$<ProjectPostProps>(
           </div>
           <div class="mt-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <Form action={likeProjectAction}>
-                <input type="hidden" name="id" value={id} />
-                <input
-                  type="hidden"
-                  name="intent"
-                  value={userLikeId ? 'deleteLike' : 'createLike'}
-                />
-                <Button
-                  look="ghost"
-                  size="icon"
-                  class="rounded-full hover:bg-muted gap-1 w-full px-4"
-                  type="submit"
-                  onClick$={(e) => {
-                    // to prevent redirecting to the project page
-                    e.stopPropagation();
-                  }}
-                >
-                  {userLikeId ? (
-                    <TbHeartFilled color="red" font-size={22} />
-                  ) : (
-                    <TbHeart font-size={22} />
-                  )}
-                  <span style={{ color: userLikeId ? 'red' : '' }}>
-                    {likes}
-                  </span>
-                  <span class="sr-only">Like</span>
-                </Button>
-              </Form>
+              <Button
+                look="ghost"
+                size="icon"
+                class="rounded-full hover:bg-muted gap-1 w-full"
+                type="submit"
+                onClick$={(e) => handleLikePost(e)}
+              >
+                {project.isLiked ? (
+                  <TbHeartFilled color="red" font-size={22} />
+                ) : (
+                  <TbHeart font-size={22} />
+                )}
+                <span style={{ color: project.isLiked ? 'red' : '' }}>
+                  {project.likes}
+                </span>
+                <span class="sr-only">Like</span>
+              </Button>
+
               <Button
                 look="ghost"
                 size="icon"
@@ -179,7 +194,7 @@ export const ProjectPost = component$<ProjectPostProps>(
                   alert('Feature not implemented yet');
                 }}
               >
-                <LuMessageCircle class="w-5 h-5" />
+                <LuMessageCircle class="size-5" />
                 <span class="sr-only">Comment</span>
               </Button>
               <Button
@@ -192,7 +207,7 @@ export const ProjectPost = component$<ProjectPostProps>(
                   alert('Feature not implemented yet');
                 }}
               >
-                <LuShare2 class="w-5 h-5" />
+                <LuShare2 class="size-5" />
                 <span class="sr-only">Share</span>
               </Button>
             </div>
