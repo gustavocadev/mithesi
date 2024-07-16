@@ -1,13 +1,10 @@
 import { component$, Slot } from '@builder.io/qwik';
 import { routeLoader$ } from '@builder.io/qwik-city';
-import { handleRequest } from '~/server/db/lucia';
+import type { Session } from 'lucia';
 
-export const useLoaderData = routeLoader$(async (event) => {
-  const authRequest = handleRequest(event);
-  const { session } = await authRequest.validateUser();
-
-  console.log('If there is a session redirect to /projects if not do nothing');
-  if (session) throw event.redirect(303, '/projects');
+export const useLoaderData = routeLoader$(async ({ sharedMap, redirect }) => {
+  const session = sharedMap.get('session') as Session | undefined;
+  if (session) throw redirect(303, '/projects');
 
   return {};
 });

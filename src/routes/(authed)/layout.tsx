@@ -1,25 +1,17 @@
 import { component$, Slot } from '@builder.io/qwik';
 import { routeLoader$ } from '@builder.io/qwik-city';
+import type { User } from 'lucia';
 import { Toaster } from 'qwik-sonner';
 import { CreateProjectModal } from '~/components/project/CreateProjectModal';
 import { Header } from '~/components/shared/Header';
 import { ProjectProvider } from '~/context/project/ProjectProvider';
 import { SocketProvider } from '~/context/socket/SocketProvider';
-import { handleRequest } from '~/server/db/lucia';
-import { findOneUser } from '~/server/services/user/user';
 
-export const useUserDataLoader = routeLoader$(async (event) => {
-  const authRequest = handleRequest(event);
-  const { session } = await authRequest.validateUser();
+export const useUserAuth = routeLoader$(async ({ sharedMap, redirect }) => {
+  const user = sharedMap.get('user') as User | undefined;
+  if (!user) throw redirect(303, '/login/');
 
-  if (!session) {
-    throw event.redirect(303, '/login');
-  }
-  const user = await findOneUser(session.userId);
-
-  return {
-    user,
-  };
+  return user;
 });
 
 export default component$(() => {
@@ -28,7 +20,7 @@ export default component$(() => {
       <ProjectProvider>
         <div>
           <Header />
-          <main class="flex-1 p-10">
+          <main class="py-10 relative">
             <Slot />
           </main>
 

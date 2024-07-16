@@ -1,10 +1,9 @@
 import type { RequestHandler } from '@builder.io/qwik-city';
-import { handleRequest } from '~/server/db/lucia';
+import type { Session } from 'lucia';
 
-export const onGet: RequestHandler = async ({ redirect, cookie }) => {
-  const authRequest = handleRequest({ cookie });
-  const { session } = await authRequest.validateUser();
-  if (!session) throw redirect(303, '/login/');
-
-  throw redirect(303, '/projects/');
+export const onGet: RequestHandler = async ({ redirect, sharedMap }) => {
+  const session = sharedMap.get('session') as Session | undefined;
+  if (!session) {
+    throw redirect(303, '/projects/');
+  }
 };
