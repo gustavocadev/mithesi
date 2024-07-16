@@ -76,11 +76,11 @@ export const CreateProjectModal = component$(() => {
             </div>
             <div class="space-y-2">
               <Label for="image">Imagen (opcional)</Label>
-              <Input id="image" type="file" name="image" />
+              <Input id="image" type="file" name="image" accept="image/*" />
             </div>
             <div class="space-y-2">
               <Label for="pdf">Proyecto de tesis PDF (*)</Label>
-              <Input id="pdf" type="file" required name="pdf" />
+              <Input id="pdf" type="file" required name="pdf" accept=".pdf" />
             </div>
           </div>
           <div class="flex gap-2 justify-end">
