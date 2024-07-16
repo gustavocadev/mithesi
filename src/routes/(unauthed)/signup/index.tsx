@@ -26,8 +26,6 @@ export const useSignupAction = routeAction$(
 
       const passwordHash = await hashPassword(values.password);
 
-      console.log({ passwordHash });
-
       await db.insert(userTable).values({
         name: values.name,
         lastName: values.lastName,
