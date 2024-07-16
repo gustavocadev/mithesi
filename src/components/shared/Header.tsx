@@ -21,7 +21,7 @@ export const Header = component$(() => {
   const { isOnline } = useContext(SocketContext);
 
   return (
-    <header class="px-4 py-5 bg-white border-b">
+    <header class="px-4 xl:px-10 py-5 bg-white border-b">
       <nav class="md:flex md:justify-between items-center">
         <Link
           href="/projects/"
@@ -41,11 +41,10 @@ export const Header = component$(() => {
             </Button>
           </Link>
           <Form action={signoutAction}>
-            <Button type="submit" look="destructive">
-              Cerrar sesion
+            <Button look="destructive" type="submit" class="uppercase">
+              Cerrar sesión
             </Button>
           </Form>
-          {/* <Busqueda /> */}
         </div>
       </nav>
     </header>
