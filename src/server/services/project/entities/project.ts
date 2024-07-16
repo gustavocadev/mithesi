@@ -1,7 +1,12 @@
-import { SelectProject, SelectUser, SelectUserLike } from '~/server/db/schema';
+import { SelectProject, SelectUser } from '~/server/db/schema';
 
 export type Project = SelectProject & {
-  user: SelectUser;
-  userLike?: SelectUserLike | null;
+  user: {
+    id: SelectUser['id'];
+    name: SelectUser['name'];
+    lastName: SelectUser['lastName'];
+    role: SelectUser['role'];
+  };
   likes: number;
+  isLiked: boolean;
 };
