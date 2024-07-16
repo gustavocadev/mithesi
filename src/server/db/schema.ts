@@ -134,7 +134,7 @@ export const comment = pgTable('comment', {
   isVisible: boolean('is_visible').notNull().default(true),
   thesisProjectId: text('thesis_project_id').notNull(),
   commentParentId: text('comment_parent_id'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 export type SelectComment = typeof comment.$inferSelect;
 
