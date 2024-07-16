@@ -130,13 +130,13 @@ export const ProjectPost = component$<ProjectPostProps>(
             <Card.Description>{project.description}</Card.Description>
           </div>
         </Card.Header>
-        <Card.Content>
+        <Card.Content class="space-y-4">
           <div class="flex items-center justify-between text-sm text-muted-foreground">
             <div>Publicado el {formatDate(project.createdAt)}</div>
             <div>Por {project.user.name}</div>
           </div>
           {project.urlImg && (
-            <figure class="mt-4">
+            <figure>
               <img
                 src={project.urlImg}
                 alt="Imagen del artículo"
@@ -146,72 +146,68 @@ export const ProjectPost = component$<ProjectPostProps>(
               />
             </figure>
           )}
-          <div class="mt-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              {project.status === 'pending' && (
-                <Badge look="outline" class="bg-yellow-500 text-white">
-                  Pendiente
-                </Badge>
-              )}
-              {project.status === 'approved' && (
-                <Badge look="outline" class="bg-green-500 text-white">
-                  Aprobado
-                </Badge>
-              )}
-              {project.status === 'rejected' && (
-                <Badge look="outline" class="bg-red-500 text-white">
-                  Reprobado
-                </Badge>
-              )}
-            </div>
+          <div class="flex items-center">
+            {project.status === 'pending' && (
+              <Badge look="outline" class="bg-yellow-500 text-white">
+                Pendiente
+              </Badge>
+            )}
+            {project.status === 'approved' && (
+              <Badge look="outline" class="bg-green-500 text-white">
+                Aprobado
+              </Badge>
+            )}
+            {project.status === 'rejected' && (
+              <Badge look="outline" class="bg-red-500 text-white">
+                Reprobado
+              </Badge>
+            )}
           </div>
-          <div class="mt-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <Button
-                look="ghost"
-                size="icon"
-                class="rounded-full hover:bg-muted gap-1 w-full"
-                type="submit"
-                onClick$={(e) => handleLikePost(e)}
-              >
-                {project.isLiked ? (
-                  <TbHeartFilled color="red" font-size={22} />
-                ) : (
-                  <TbHeart font-size={22} />
-                )}
-                <span style={{ color: project.isLiked ? 'red' : '' }}>
-                  {project.likes}
-                </span>
-                <span class="sr-only">Like</span>
-              </Button>
+          <div class="flex items-center justify-start w-full gap-1">
+            <Button
+              look="ghost"
+              size="icon"
+              class="rounded-full hover:bg-muted gap-1 w-16"
+              type="submit"
+              onClick$={(e) => handleLikePost(e)}
+            >
+              {project.isLiked ? (
+                <TbHeartFilled color="red" font-size={22} />
+              ) : (
+                <TbHeart font-size={22} />
+              )}
+              <span style={{ color: project.isLiked ? 'red' : '' }}>
+                {project.likes}
+              </span>
+              <span class="sr-only">Like</span>
+            </Button>
 
-              <Button
-                look="ghost"
-                size="icon"
-                class="rounded-full hover:bg-muted"
-                onClick$={(e) => {
-                  // to prevent redirecting to the project page
-                  e.stopPropagation();
-                  alert('Feature not implemented yet');
-                }}
-              >
-                <LuMessageCircle class="size-5" />
-                <span class="sr-only">Comment</span>
-              </Button>
-              <Button
-                look="ghost"
-                size="icon"
-                class="rounded-full hover:bg-muted"
-                onClick$={(e) => {
-                  // to prevent redirecting to the project page
-                  e.stopPropagation();
-                  alert('Feature not implemented yet');
-                }}
-              >
-                <LuShare2 class="size-5" />
-                <span class="sr-only">Share</span>
-              </Button>
-            </div>
+            <Button
+              look="ghost"
+              size="icon"
+              class="rounded-full hover:bg-muted"
+              onClick$={(e) => {
+                // to prevent redirecting to the project page
+                e.stopPropagation();
+                alert('Feature not implemented yet');
+              }}
+            >
+              <LuMessageCircle class="size-5" />
+              <span class="sr-only">Comment</span>
+            </Button>
+            <Button
+              look="ghost"
+              size="icon"
+              class="rounded-full hover:bg-muted"
+              onClick$={(e) => {
+                // to prevent redirecting to the project page
+                e.stopPropagation();
+                alert('Feature not implemented yet');
+              }}
+            >
+              <LuShare2 class="size-5" />
+              <span class="sr-only">Share</span>
+            </Button>
           </div>
         </Card.Content>
       </Card.Root>
