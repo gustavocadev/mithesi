@@ -23,7 +23,7 @@ export const findCommitteeMembersByProjectId = async (
   return contributors;
 };
 
-export const createContributor = async (
+export const createCommitteeMember = async (
   userId: string,
   projectId: string
 ): Promise<void> => {
@@ -33,7 +33,7 @@ export const createContributor = async (
   });
 };
 
-export const removeOneContributor = async (
+export const removeOneCommitteeMember = async (
   projectId: string,
   userId: string
 ): Promise<void> => {
