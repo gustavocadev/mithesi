@@ -1,54 +1,79 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, Resource, useContext } from '@builder.io/qwik';
 import {
   type DocumentHead,
+  Form,
   Link,
+  routeAction$,
   routeLoader$,
+  server$,
+  useLocation,
   useNavigate,
+  z,
+  zod$,
 } from '@builder.io/qwik-city';
-import { ComitteeMember } from '~/components/project/ComitteeMember';
 import { Button } from '~/components/ui/button/button';
-import { handleRequest } from '~/server/db/lucia';
 import { findOneThesisProject } from '~/server/services/project/project';
-import { LuArrowLeft } from '@qwikest/icons/lucide';
+import { LuArrowLeft, LuPencil } from '@qwikest/icons/lucide';
 import { ProjectPost } from '~/components/project/ProjectPost';
-import { findCommitteeMembersByProjectId } from '~/server/services/comittee-member/comittee-member';
+import { ProjectContext } from '~/context/project/ProjectContext';
+import { Input } from '~/components/ui/input/input';
+import {
+  createCommitteeMember,
+  findCommitteeMembersByProjectId,
+} from '~/server/services/comittee-member/comittee-member';
+import { ComitteeMember } from '~/components/project/ComitteeMember';
+import { findOneUser } from '~/server/services/user/user';
+import { useUserAuth } from '../../layout';
 
-export const useLoaderProject = routeLoader$(async ({ params }) => {
+export const useProject = routeLoader$(async ({ params }) => {
   // the project data
   const project = await findOneThesisProject(params.id);
 
+  return project;
+});
+
+export const getProject = server$(async function (id: string) {
   return {
-    project,
+    project: await findOneThesisProject(id),
   };
 });
 
-export const useCommitteeMembers = routeLoader$(async ({ params }) => {
-  // all the contributors that belong to the project
-  const contributors = await findCommitteeMembersByProjectId(params.id);
-
+export const getCommitteeMembers = server$(async function (id: string) {
   return {
-    contributors,
+    committeeMembers: await findCommitteeMembersByProjectId(id),
   };
 });
 
-export const useLoaderUserAuth = routeLoader$(async ({ cookie, redirect }) => {
-  const authRequest = handleRequest({ cookie });
-  const { user } = await authRequest.validateUser();
-  if (!user) throw redirect(303, '/');
+export const useActionAddCommitteeMember = routeAction$(
+  async (values, request) => {
+    const userToAdd = await findOneUser(values.userId);
 
-  return {
-    user,
-  };
-});
+    if (!userToAdd) {
+      return {
+        error: 'User not found',
+      };
+    }
+
+    await createCommitteeMember(values.userId, values.projectId);
+
+    console.log({ userToAdd });
+    throw request.redirect(303, `/projects/${values.projectId}`);
+  },
+  zod$({
+    userId: z.string(),
+    projectId: z.string(),
+  })
+);
 
 export default component$(() => {
-  const loaderProject = useLoaderProject();
-  const loaderContributors = useCommitteeMembers();
-  const loaderUserAuth = useLoaderUserAuth();
+  const userAuth = useUserAuth();
+  const { projectSelected } = useContext(ProjectContext);
   const nav = useNavigate();
+  const loc = useLocation();
+  const projectId = loc.params.id;
 
   return (
-    <div class="space-y-4 mx-auto w-4/12">
+    <div class="space-y-4 mx-auto w-full sm:w-8/12 lg:w-5/12 2xl:w-4/12">
       <div class="flex justify-between">
         <Button
           look="ghost"
@@ -61,79 +86,75 @@ export default component$(() => {
           <LuArrowLeft class="w-5 h-5" />
         </Button>
 
-        {loaderUserAuth.value.user.id ===
-          loaderProject.value.project.userId && (
-          <div class="flex items-center gap-2 text-gray-400 hover:text-black">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width={1.5}
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-              />
-            </svg>
-
-            <Link
-              class="uppercase font-bold"
-              href={`/projects/edit/${loaderProject.value.project.id}`}
-            >
-              Editar
-            </Link>
-          </div>
-        )}
+        <Resource
+          value={getProject(projectId)}
+          onResolved={({ project }) => (
+            <>
+              {userAuth.value.id === project.user.id && (
+                <div class="flex items-center gap-2 text-gray-400 hover:text-black">
+                  <LuPencil class="size-5" />
+                  <Link
+                    class="uppercase font-bold"
+                    href={`/projects/edit/${projectSelected.value?.id}`}
+                  >
+                    Editar
+                  </Link>
+                </div>
+              )}
+            </>
+          )}
+        />
       </div>
-      <ProjectPost
-        createdAt={loaderProject.value.project.createdAt}
-        description={loaderProject.value.project.description}
-        title={loaderProject.value.project.title}
-        id={loaderProject.value.project.id}
-        urlPdf={loaderProject.value.project.urlPdf}
-        projectStatus={loaderProject.value.project.status}
-        urlImg={loaderProject.value.project.urlImg}
-        authorName={
-          loaderProject.value.project.user.name +
-          ' ' +
-          loaderProject.value.project.user.lastName
-        }
-        userLikeId={loaderProject.value.project.userLike?.id}
-        likes={loaderProject.value.project.likes}
-      />
+      {projectSelected.value ? (
+        <ProjectPost project={projectSelected.value} />
+      ) : (
+        <Resource
+          value={getProject(projectId)}
+          onResolved={({ project }) => {
+            return <ProjectPost project={project} />;
+          }}
+        />
+      )}
 
-      <div class="flex items-center justify-between mt-10">
-        <p class="font-bold text-xl">Miembros del jurado</p>
-        {loaderUserAuth.value.user.id ===
-          loaderProject.value.project.userId && (
-          <Button
-            look="link"
-            class="uppercase font-bold text-gray-400 hover:text-black hover:no-underline"
-          >
-            <Link
-              href={`/projects/${loaderProject.value.project?.id}/new-committee-member`}
-            >
-              Agregar miembro del jurado
-            </Link>
-          </Button>
-        )}
-      </div>
-      <div>
-        {loaderContributors.value.contributors.length ? (
-          loaderContributors.value.contributors.map((contributor) => (
-            <ComitteeMember
-              contributor={contributor}
-              key={contributor.id}
-              projectId={loaderProject.value.project?.id ?? ''}
-              authorId={loaderProject.value.project?.userId ?? ''}
-              userAuthId={loaderUserAuth.value.user?.id ?? ''}
+      <div class="space-y-2 absolute right-10 top-0 hidden xl:block">
+        {userAuth.value.role === 'admin' && (
+          <section class="bg-white p-5 w-full rounded-lg shadow mx-auto space-y-4">
+            <Form class="space-y-2">
+              <p class="font-bold text-xl text-center">Miembros del jurado</p>
+              <div class="flex items-center justify-center gap-2">
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email del Usuario"
+                />
+                <Button type="submit">Agregar</Button>
+              </div>
+            </Form>
+
+            <Resource
+              value={getCommitteeMembers(projectId)}
+              onResolved={({ committeeMembers }) => {
+                return (
+                  <div class="space-y-4">
+                    {committeeMembers.length !== 0 ? (
+                      committeeMembers.map((contributor) => (
+                        <ComitteeMember
+                          contributor={contributor}
+                          key={contributor.id}
+                          projectId={projectId ?? ''}
+                          authorId={projectSelected.value?.userId ?? ''}
+                          userAuthId={userAuth.value.id ?? ''}
+                        />
+                      ))
+                    ) : (
+                      <p class="text-center">No hay miembros del jurado</p>
+                    )}
+                  </div>
+                );
+              }}
             />
-          ))
-        ) : (
-          <p class="text-center my-5 p-10">No hay miembros del jurado</p>
+          </section>
         )}
       </div>
     </div>
@@ -141,14 +162,17 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = ({ resolveValue, params }) => {
-  const project = resolveValue(useLoaderProject);
+  const project = resolveValue(useProject);
+
+  const title = project.title;
+  const description = project.description;
 
   return {
-    title: `Proyecto "${project.project.title}"`,
+    title: `Proyecto "${title}"`,
     meta: [
       {
         name: 'description',
-        content: project.project.description,
+        content: description,
       },
       {
         name: 'id',
