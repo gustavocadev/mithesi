@@ -26,7 +26,7 @@ export const useAuthSigninAction = routeAction$(
     authRequest.setSession(session); // set session cookie
 
     // make sure you don't throw inside a try/catch block!
-    throw redirect(303, '/projects');
+    throw redirect(303, '/projects/');
   },
   zod$({
     email: z.string(),
