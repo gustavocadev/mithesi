@@ -1,54 +1,51 @@
-import { component$, useContext } from '@builder.io/qwik';
+import { component$, useContext, useTask$ } from '@builder.io/qwik';
 import { ProjectPost } from '~/components/project/ProjectPost';
-import { type DocumentHead, routeLoader$ } from '@builder.io/qwik-city';
-import { handleRequest } from '~/server/db/lucia';
+import {
+  type DocumentHead,
+  routeLoader$,
+  useNavigate,
+} from '@builder.io/qwik-city';
 import { findProjectsByUserId } from '~/server/services/project/project';
 import { Button } from '~/components/ui/button/button';
 import { Card } from '~/components/ui/card/card';
 import { ProjectContext } from '~/context/project/ProjectContext';
 
-export const useProjectsLoader = routeLoader$(
-  async ({ url, cookie, redirect }) => {
-    const authRequest = handleRequest({ cookie });
-    const { user } = await authRequest.validateUser();
-    if (!user) throw redirect(303, '/login');
+import type { User } from 'lucia';
 
-    // get all the projects that the user is the author or contributor
-    const projectsByUser = await findProjectsByUserId(user.id);
+export const useProjects = routeLoader$(async ({ url, sharedMap }) => {
+  const user = sharedMap.get('user') as User;
 
-    // search for params if there is a search param
-    const projectName = url.searchParams.get('search');
+  // get all the projects that the user is the author or contributor
+  const projectsByUser = await findProjectsByUserId(user.id);
 
-    // map the projects to remove the user password and email
-    const projectsByUserMapped = projectsByUser.map((project) => ({
-      ...project,
-      user: {
-        id: project.user.id,
-        name: project.user.name,
-        lastName: project.user.lastName,
-      },
-      likes: project.likes,
-    }));
-    console.log(projectsByUserMapped);
+  // search for params if there is a search param
+  const projectName = url.searchParams.get('search');
 
-    // if there is a search param, filter the projects by the search param
-    if (projectName) {
-      const projects = projectsByUserMapped.filter((project) =>
-        project.title.toLowerCase().includes(projectName.toLowerCase())
-      );
+  // if there is a search param, filter the projects by the search param
+  if (projectName) {
+    const projects = projectsByUser.filter((project) =>
+      project.title.toLowerCase().includes(projectName.toLowerCase())
+    );
 
-      return projects;
-    }
-
-    // if there is no search param, return all the projects
-
-    return projectsByUserMapped;
+    return projects;
   }
-);
+
+  // if there is no search param, return all the projects
+
+  return projectsByUser;
+});
 
 export default component$(() => {
-  const projects = useProjectsLoader();
-  const { showCreateProjectModal } = useContext(ProjectContext);
+  const projectsData = useProjects();
+  const { showCreateProjectModal, projectSelected, projects } =
+    useContext(ProjectContext);
+
+  const nav = useNavigate();
+
+  useTask$(({ track }) => {
+    track(() => projectsData.value);
+    projects.value = projectsData.value;
+  });
 
   return (
     <Card.Root class="w-full md:w-8/12 xl:w-4/12 mx-auto rounded-xl">
@@ -70,16 +67,12 @@ export default component$(() => {
       {projects.value.map((project) => (
         <ProjectPost
           key={project.id}
-          createdAt={project.createdAt}
-          description={project.description}
-          id={project.id}
-          title={project.title}
-          urlPdf={project.urlPdf}
-          urlImg={project.urlImg}
-          projectStatus={project.status}
-          authorName={project.user.name + ' ' + project.user.lastName}
-          userLikeId={project.userLike?.id}
-          likes={project.likes}
+          project={project}
+          class="cursor-pointer rounded-none border-t"
+          onClick$={() => {
+            projectSelected.value = project;
+            nav('/projects/' + project.id + '/');
+          }}
         />
       ))}
     </Card.Root>
