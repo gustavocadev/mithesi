@@ -21,7 +21,7 @@ export const Header = component$(() => {
   const { isOnline } = useContext(SocketContext);
 
   return (
-    <header class="px-4 xl:px-10 py-5 bg-white border-b">
+    <header class="px-4 xl:px-10 py-4 bg-white border-b">
       <nav class="md:flex md:justify-between items-center">
         <Link
           href="/projects/"
