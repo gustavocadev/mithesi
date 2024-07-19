@@ -27,7 +27,7 @@ export default component$(() => {
             </main>
 
             <CreateProjectModal />
-            <Toaster />
+            <Toaster richColors />
           </div>
         </CommentProvider>
       </ProjectProvider>
