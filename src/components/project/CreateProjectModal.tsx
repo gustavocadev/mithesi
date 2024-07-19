@@ -10,12 +10,13 @@ import { createProject } from '~/server/services/project/project';
 import { handleRequest } from '~/server/db/lucia';
 import { toast } from 'qwik-sonner';
 import { uploadFile } from '~/server/utils/uploadFile';
+import { zfd } from 'zod-form-data';
 
 export const useCreateProjectAction = globalAction$(
-  async (values, event) => {
-    const authRequest = handleRequest(event);
+  async (values, { cookie, redirect }) => {
+    const authRequest = handleRequest({ cookie });
     const { user } = await authRequest.validateUser();
-    if (!user) throw event.redirect(303, '/login');
+    if (!user) throw redirect(303, '/login');
 
     const urlPdf = await uploadFile(values.pdf);
     if (!urlPdf) throw new Error('Error uploading file');
@@ -30,13 +31,13 @@ export const useCreateProjectAction = globalAction$(
       userId: user.id,
     });
 
-    throw event.redirect(303, '/projects');
+    throw redirect(303, '/projects');
   },
   zod$({
     title: z.string().min(1).max(100),
     description: z.string().min(1).max(1000),
-    image: z.any().optional(),
-    pdf: z.any(),
+    image: zfd.file().optional(),
+    pdf: zfd.file(),
   })
 );
 
@@ -53,6 +54,7 @@ export const CreateProjectModal = component$(() => {
         <Form
           action={createProjectAction}
           onSubmitCompleted$={$(() => {
+            if (createProjectAction.value?.failed) return;
             showCreateProjectModal.value = false;
             toast.success('Proyecto creado con exito');
           })}
@@ -65,6 +67,9 @@ export const CreateProjectModal = component$(() => {
                 placeholder="Ingresa un titulo para el proyecto"
                 name="title"
               />
+              {createProjectAction.value?.fieldErrors.title && (
+                <p class="text-red-500 text-sm">El campo titulo es requerido</p>
+              )}
             </div>
             <div class="space-y-2">
               <Label for="description">Descripcion (*)</Label>
@@ -73,6 +78,11 @@ export const CreateProjectModal = component$(() => {
                 placeholder="Ingrese una descripcion"
                 name="description"
               />
+              {createProjectAction.value?.fieldErrors.description && (
+                <p class="text-red-500 text-sm">
+                  El campo descripcion es requerido
+                </p>
+              )}
             </div>
             <div class="space-y-2">
               <Label for="image">Imagen (opcional)</Label>
@@ -81,6 +91,11 @@ export const CreateProjectModal = component$(() => {
             <div class="space-y-2">
               <Label for="pdf">Proyecto de tesis PDF (*)</Label>
               <Input id="pdf" type="file" required name="pdf" accept=".pdf" />
+              {createProjectAction.value?.fieldErrors.pdf && (
+                <p class="text-red-500 text-sm">
+                  El campo proyecto de tesis PDF es requerido
+                </p>
+              )}
             </div>
           </div>
           <div class="flex gap-2 justify-end">
