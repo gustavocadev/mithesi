@@ -9,7 +9,7 @@ import {
 import { Card } from '../ui/card/card';
 import { Badge } from '~/components/ui/badge/badge';
 import { Button } from '~/components/ui/button/button';
-import { LuMessageCircle, LuShare2 } from '@qwikest/icons/lucide';
+import { LuMessageCircle, LuShare2, LuBookDown } from '@qwikest/icons/lucide';
 import { TbHeart, TbHeartFilled } from '@qwikest/icons/tablericons';
 
 import { formatDate } from '~/utils/formatDate';
@@ -34,6 +34,7 @@ import { CommentPost } from './CommentPost';
 import { getCommentsByProjectId } from '~/server/services/comment/comment';
 import { CommentContext } from '~/context/comment/CommentContext';
 import { toast } from 'qwik-sonner';
+import { useUserAuth } from '~/routes/(authed)/layout';
 
 export const useLikeProjectAction = globalAction$(
   async (values, { redirect, sharedMap }) => {
@@ -83,6 +84,7 @@ export const ProjectPost = component$<ProjectPostProps>(
     const loc = useLocation();
     const content = useSignal('');
     const projectId = loc.params.id;
+    const userAuth = useUserAuth();
 
     const handleLikePost = $(async (e: PointerEvent) => {
       // to prevent redirecting to the project page
@@ -146,23 +148,30 @@ export const ProjectPost = component$<ProjectPostProps>(
         <Card.Header>
           <div class="space-y-2">
             <Card.Title class="text-3xl font-bold">{project.title}</Card.Title>
+
+            <Card.Description>{project.description}</Card.Description>
+
             <a
               href={project.urlPdf}
               target="_blank"
-              class="text-primary hover:underline flex-shrink-0 uppercase font-semibold"
+              class="block"
               onClick$={(e) => {
                 e.stopPropagation();
               }}
             >
-              Descargar PDF
+              <Button
+                look="outline"
+                class="flex gap-1 items-center font-semibold"
+              >
+                Ver PDF <LuBookDown class="size-5" />
+              </Button>
             </a>
-            <Card.Description>{project.description}</Card.Description>
           </div>
         </Card.Header>
         <Card.Content class="space-y-4">
           <div class="flex items-center justify-between text-sm text-muted-foreground">
             <div>Publicado el {formatDate(project.createdAt)}</div>
-            <div>Por {project.user.name}</div>
+            <div>Por {project.user.name + ' ' + project.user.lastName}</div>
           </div>
           {project.urlImg && (
             <figure>
@@ -200,12 +209,19 @@ export const ProjectPost = component$<ProjectPostProps>(
               type="submit"
               onClick$={(e) => handleLikePost(e)}
             >
-              {project.isLiked ? (
+              {project.isLiked && project.user.id === userAuth.value.id ? (
                 <TbHeartFilled color="red" font-size={22} />
               ) : (
                 <TbHeart font-size={22} />
               )}
-              <span style={{ color: project.isLiked ? 'red' : '' }}>
+              <span
+                style={{
+                  color:
+                    project.isLiked && project.user.id === userAuth.value.id
+                      ? 'red'
+                      : '',
+                }}
+              >
                 {project.likes}
               </span>
               <span class="sr-only">Like</span>
