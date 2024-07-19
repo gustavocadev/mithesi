@@ -1,10 +1,11 @@
-import { component$ } from '@builder.io/qwik';
+import { $, component$ } from '@builder.io/qwik';
 import { Form, globalAction$, z, zod$ } from '@builder.io/qwik-city';
 import { Button } from '../ui/button/button';
 import type { UserComitteeMember } from '~/server/services/comittee-member/types/comittee-member';
 import type { User } from 'lucia';
 import { LuX } from '@qwikest/icons/lucide';
 import { removeOneCommitteeMember } from '~/server/services/comittee-member/comittee-member';
+import { toast } from 'qwik-sonner';
 
 export const useRemoveOneCommitteMemberAction = globalAction$(
   async (values) => {
@@ -38,7 +39,12 @@ export const ComitteeMember = component$(
         </div>
 
         {user.role === 'admin' && (
-          <Form action={removeOneCommitteeMemberAction}>
+          <Form
+            action={removeOneCommitteeMemberAction}
+            onSubmitCompleted$={$(() => {
+              toast.success('Miembro del jurado eliminado con éxito');
+            })}
+          >
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="userId" value={committeeMember.id} />
 
