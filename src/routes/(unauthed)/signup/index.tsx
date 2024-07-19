@@ -13,6 +13,7 @@ import { userTable } from '~/server/db/schema';
 import pg from 'pg';
 import { Button } from '~/components/ui/button/button';
 import { Input } from '~/components/ui/input/input';
+import { Label } from '~/components/ui/label/label';
 
 export const useSignupAction = routeAction$(
   async (values, { redirect, fail }) => {
@@ -75,12 +76,12 @@ export default component$(() => {
           class="bg-white shadow rounded-lg p-10 space-y-6"
         >
           <div class="space-y-2">
-            <label
+            <Label
               class="uppercase text-gray-600 block text-xl font-bold"
               for="name"
             >
               Nombres
-            </label>
+            </Label>
             <Input
               type="text"
               id="name"
@@ -91,12 +92,12 @@ export default component$(() => {
           </div>
 
           <div class="space-y-2">
-            <label
+            <Label
               class="uppercase text-gray-600 block text-xl font-bold"
               for="lastName"
             >
               Apellidos
-            </label>
+            </Label>
             <Input
               type="text"
               id="lastName"
@@ -107,12 +108,12 @@ export default component$(() => {
           </div>
 
           <div class="space-y-2">
-            <label
+            <Label
               class="uppercase text-gray-600 block text-xl font-bold"
               for="email"
             >
               Email
-            </label>
+            </Label>
             <Input
               type="text"
               id="email"
@@ -123,12 +124,12 @@ export default component$(() => {
           </div>
 
           <div class="space-y-2">
-            <label
+            <Label
               class="uppercase text-gray-600 block text-xl font-bold"
               for="password"
             >
               Contraseña
-            </label>
+            </Label>
             <Input
               type="password"
               id="password"
@@ -139,12 +140,12 @@ export default component$(() => {
           </div>
 
           <div class="space-y-2">
-            <label
+            <Label
               class="uppercase text-gray-600 block text-xl font-bold"
               for="confirmPassword"
             >
               Repetir Contraseña
-            </label>
+            </Label>
             <Input
               type="password"
               id="confirmPassword"
@@ -154,7 +155,11 @@ export default component$(() => {
             />
           </div>
 
-          <Button type="submit" class="w-full uppercase text-md font-bold">
+          <Button
+            type="submit"
+            class="w-full uppercase text-md font-bold"
+            disabled={signupAction.isRunning}
+          >
             Crear cuenta
           </Button>
         </Form>
