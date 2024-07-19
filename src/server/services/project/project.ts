@@ -1,4 +1,4 @@
-import { count, eq, or, sql } from 'drizzle-orm';
+import { count, desc, eq, or, sql } from 'drizzle-orm';
 import { db } from '~/server/db/db';
 import {
   committeeMember,
@@ -61,7 +61,8 @@ export const findProjectsByUserId = async (
       committeeMember,
       eq(committeeMember.thesisProjectId, thesisProject.id)
     )
-    .groupBy(userTable.id, thesisProject.id, userLike.id);
+    .groupBy(userTable.id, thesisProject.id, userLike.id)
+    .orderBy(desc(thesisProject.createdAt));
 
   if (userRole === 'user') {
     const projects = await projectsByUserSubQuery.where(
