@@ -16,7 +16,7 @@ export const useProjects = routeLoader$(async ({ url, sharedMap }) => {
   const user = sharedMap.get('user') as User;
 
   // get all the projects that the user is the author or contributor
-  const projectsByUser = await findProjectsByUserId(user.id);
+  const projectsByUser = await findProjectsByUserId(user.id, user.role);
 
   // search for params if there is a search param
   const projectName = url.searchParams.get('search');
