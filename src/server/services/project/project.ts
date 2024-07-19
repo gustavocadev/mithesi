@@ -1,6 +1,11 @@
-import { count, eq, sql } from 'drizzle-orm';
+import { count, eq, or, sql } from 'drizzle-orm';
 import { db } from '~/server/db/db';
-import { thesisProject, userLike, userTable } from '~/server/db/schema';
+import {
+  committeeMember,
+  thesisProject,
+  userLike,
+  userTable,
+} from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
 import { Project } from './entities/project';
 
@@ -34,9 +39,10 @@ export const findOneThesisProject = async (
 };
 
 export const findProjectsByUserId = async (
-  userId: string
+  userId: string,
+  userRole: string
 ): Promise<Project[]> => {
-  const projectsByUser = await db
+  const projectsByUserSubQuery = db
     .select({
       projects: thesisProject,
       user: {
@@ -51,19 +57,31 @@ export const findProjectsByUserId = async (
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
-    .where(eq(thesisProject.userId, userId))
+    .leftJoin(
+      committeeMember,
+      eq(committeeMember.thesisProjectId, thesisProject.id)
+    )
     .groupBy(userTable.id, thesisProject.id, userLike.id);
 
-  const projects = projectsByUser.map((project) => {
-    return {
+  if (userRole === 'user') {
+    const projects = await projectsByUserSubQuery.where(
+      or(eq(thesisProject.userId, userId), eq(committeeMember.userId, userId))
+    );
+    return projects.map((project) => ({
       ...project.projects,
       user: project.user,
       likes: project.likes,
       isLiked: project.isLiked,
-    };
-  });
+    }));
+  }
+  const projects = await projectsByUserSubQuery;
 
-  return projects;
+  return projects.map((project) => ({
+    ...project.projects,
+    user: project.user,
+    likes: project.likes,
+    isLiked: project.isLiked,
+  }));
 };
 
 export const createProject = async ({
