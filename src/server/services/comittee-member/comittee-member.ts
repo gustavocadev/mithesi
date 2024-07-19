@@ -12,6 +12,7 @@ export const findCommitteeMembersByProjectId = async (
       name: userTable.name,
       email: userTable.email,
       lastName: userTable.lastName,
+      role: userTable.role,
     })
     .from(committeeMember)
     .innerJoin(
