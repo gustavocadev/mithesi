@@ -154,7 +154,7 @@ export const ProjectPost = component$<ProjectPostProps>(
             <a
               href={project.urlPdf}
               target="_blank"
-              class="block"
+              class="inline-block"
               onClick$={(e) => {
                 e.stopPropagation();
               }}
