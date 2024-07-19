@@ -1,4 +1,10 @@
-import { component$, Resource, useContext, useTask$ } from '@builder.io/qwik';
+import {
+  $,
+  component$,
+  Resource,
+  useContext,
+  useTask$,
+} from '@builder.io/qwik';
 import {
   type DocumentHead,
   Form,
@@ -22,10 +28,11 @@ import {
   findCommitteeMembersByProjectId,
 } from '~/server/services/comittee-member/comittee-member';
 import { ComitteeMember } from '~/components/project/ComitteeMember';
-import { findOneUser } from '~/server/services/user/user';
 import { useUserAuth } from '../../layout';
 import { CommentContext } from '~/context/comment/CommentContext';
 import { SocketContext } from '~/context/socket/SocketContext';
+import { toast } from 'qwik-sonner';
+import { findOneUserByEmail } from '~/server/services/user/user';
 
 export const useProject = routeLoader$(async ({ params }) => {
   // the project data
@@ -46,23 +53,22 @@ export const getCommitteeMembers = server$(async function (id: string) {
   };
 });
 
-export const useActionAddCommitteeMember = routeAction$(
-  async (values, request) => {
-    const userToAdd = await findOneUser(values.userId);
+export const useAddCommitteeMemberAction = routeAction$(
+  async (values, { redirect, fail }) => {
+    const userToAdd = await findOneUserByEmail(values.email);
 
     if (!userToAdd) {
-      return {
-        error: 'User not found',
-      };
+      return fail(500, {
+        message: 'El usuario no existe',
+      });
     }
 
-    await createCommitteeMember(values.userId, values.projectId);
+    await createCommitteeMember(userToAdd.id, values.projectId);
 
-    console.log({ userToAdd });
-    throw request.redirect(303, `/projects/${values.projectId}`);
+    throw redirect(303, `/projects/${values.projectId}`);
   },
   zod$({
-    userId: z.string(),
+    email: z.string().email(),
     projectId: z.string(),
   })
 );
@@ -72,6 +78,7 @@ export default component$(() => {
   const { projectSelected } = useContext(ProjectContext);
   const { getCommentsByProjectId } = useContext(CommentContext);
   const { socket } = useContext(SocketContext);
+  const addCommitteeMemberAction = useAddCommitteeMemberAction();
   const nav = useNavigate();
   const loc = useLocation();
   const projectId = loc.params.id;
@@ -128,7 +135,19 @@ export default component$(() => {
       <div class="space-y-2 absolute right-10 top-0 hidden xl:block">
         {userAuth.value.role === 'admin' && (
           <section class="bg-white p-5 w-full rounded-lg shadow mx-auto space-y-4">
-            <Form class="space-y-2">
+            <Form
+              class="space-y-2"
+              action={addCommitteeMemberAction}
+              onSubmitCompleted$={$(() => {
+                if (addCommitteeMemberAction.value?.failed) {
+                  toast.error('El usuario no existe');
+                  return;
+                }
+                toast.success('Miembro del jurado agregado con exito');
+              })}
+              spaReset
+            >
+              <input type="hidden" name="projectId" value={projectId} />
               <p class="font-bold text-xl text-center">Miembros del jurado</p>
               <div class="flex items-center justify-center gap-2">
                 <Input
@@ -136,8 +155,14 @@ export default component$(() => {
                   id="email"
                   name="email"
                   placeholder="Email del Usuario"
+                  class="w-60"
                 />
-                <Button type="submit">Agregar</Button>
+                <Button
+                  type="submit"
+                  disabled={addCommitteeMemberAction.isRunning}
+                >
+                  Agregar
+                </Button>
               </div>
             </Form>
 
@@ -147,13 +172,12 @@ export default component$(() => {
                 return (
                   <div class="space-y-4">
                     {committeeMembers.length !== 0 ? (
-                      committeeMembers.map((contributor) => (
+                      committeeMembers.map((committeeMember) => (
                         <ComitteeMember
-                          contributor={contributor}
-                          key={contributor.id}
+                          committeeMember={committeeMember}
+                          key={committeeMember.id}
                           projectId={projectId ?? ''}
-                          authorId={projectSelected.value?.userId ?? ''}
-                          userAuthId={userAuth.value.id ?? ''}
+                          user={userAuth.value}
                         />
                       ))
                     ) : (
