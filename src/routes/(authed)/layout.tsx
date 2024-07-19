@@ -4,6 +4,7 @@ import type { User } from 'lucia';
 import { Toaster } from 'qwik-sonner';
 import { CreateProjectModal } from '~/components/project/CreateProjectModal';
 import { Header } from '~/components/shared/Header';
+import { CommentProvider } from '~/context/comment/CommentProvider';
 import { ProjectProvider } from '~/context/project/ProjectProvider';
 import { SocketProvider } from '~/context/socket/SocketProvider';
 
@@ -18,15 +19,17 @@ export default component$(() => {
   return (
     <SocketProvider>
       <ProjectProvider>
-        <div>
-          <Header />
-          <main class="py-10 relative">
-            <Slot />
-          </main>
+        <CommentProvider>
+          <div>
+            <Header />
+            <main class="py-10 relative">
+              <Slot />
+            </main>
 
-          <CreateProjectModal />
-          <Toaster />
-        </div>
+            <CreateProjectModal />
+            <Toaster />
+          </div>
+        </CommentProvider>
       </ProjectProvider>
     </SocketProvider>
   );

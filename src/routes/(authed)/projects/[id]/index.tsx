@@ -1,4 +1,4 @@
-import { component$, Resource, useContext } from '@builder.io/qwik';
+import { component$, Resource, useContext, useTask$ } from '@builder.io/qwik';
 import {
   type DocumentHead,
   Form,
@@ -24,6 +24,8 @@ import {
 import { ComitteeMember } from '~/components/project/ComitteeMember';
 import { findOneUser } from '~/server/services/user/user';
 import { useUserAuth } from '../../layout';
+import { CommentContext } from '~/context/comment/CommentContext';
+import { SocketContext } from '~/context/socket/SocketContext';
 
 export const useProject = routeLoader$(async ({ params }) => {
   // the project data
@@ -68,9 +70,16 @@ export const useActionAddCommitteeMember = routeAction$(
 export default component$(() => {
   const userAuth = useUserAuth();
   const { projectSelected } = useContext(ProjectContext);
+  const { getCommentsByProjectId } = useContext(CommentContext);
+  const { socket } = useContext(SocketContext);
   const nav = useNavigate();
   const loc = useLocation();
   const projectId = loc.params.id;
+
+  useTask$(({ track }) => {
+    track(() => socket.value);
+    getCommentsByProjectId(projectId);
+  });
 
   return (
     <div class="space-y-4 mx-auto w-full sm:w-8/12 lg:w-5/12 2xl:w-4/12">

@@ -1,8 +1,9 @@
 import {
   $,
   component$,
-  Resource,
+  useComputed$,
   useContext,
+  useSignal,
   type PropsOf,
 } from '@builder.io/qwik';
 import { Card } from '../ui/card/card';
@@ -14,7 +15,6 @@ import { TbHeart, TbHeartFilled } from '@qwikest/icons/tablericons';
 import { formatDate } from '~/utils/formatDate';
 import { cn } from '@qwik-ui/utils';
 import {
-  Form,
   globalAction$,
   server$,
   useLocation,
@@ -31,10 +31,9 @@ import { ProjectContext } from '~/context/project/ProjectContext';
 import { Avatar } from '../ui/avatar/avatar';
 import { Textarea } from '../ui/textarea/textarea';
 import { CommentPost } from './CommentPost';
-import {
-  createComment,
-  getCommentsByProjectId,
-} from '~/server/services/comment/comment';
+import { getCommentsByProjectId } from '~/server/services/comment/comment';
+import { CommentContext } from '~/context/comment/CommentContext';
+import { toast } from 'qwik-sonner';
 
 export const useLikeProjectAction = globalAction$(
   async (values, { redirect, sharedMap }) => {
@@ -68,22 +67,6 @@ export const useLikeProjectAction = globalAction$(
   })
 );
 
-export const useCommentProjectAction = globalAction$(
-  async (values, { params, sharedMap }) => {
-    const projectId = params.id;
-    const user = sharedMap.get('user') as User;
-
-    await createComment({
-      projectId,
-      userId: user.id,
-      content: values.comment,
-    });
-  },
-  zod$({
-    comment: z.string(),
-  })
-);
-
 export const getCommentsByProject = server$(function (projectId: string) {
   return getCommentsByProjectId(projectId);
 });
@@ -96,8 +79,9 @@ export const ProjectPost = component$<ProjectPostProps>(
   ({ project, ...props }) => {
     const likeProjectAction = useLikeProjectAction();
     const { projectSelected, projects } = useContext(ProjectContext);
+    const { comments, createUserComment } = useContext(CommentContext);
     const loc = useLocation();
-    const commentProjectAction = useCommentProjectAction();
+    const content = useSignal('');
     const projectId = loc.params.id;
 
     const handleLikePost = $(async (e: PointerEvent) => {
@@ -145,6 +129,10 @@ export const ProjectPost = component$<ProjectPostProps>(
       // this case ins't much important because nobody will die if the like button doesn't work
       // but eventually we need to handle this case
       console.log(likeProjectActionResponse);
+    });
+
+    const isValidComment = useComputed$(() => {
+      return content.value.length <= 500 && content.value.length >= 1;
     });
 
     return (
@@ -257,38 +245,55 @@ export const ProjectPost = component$<ProjectPostProps>(
                   <Avatar.Image src="/placeholder-user.jpg" />
                   <Avatar.Fallback>JD</Avatar.Fallback>
                 </Avatar.Root>
-                <Form class="flex-1" action={commentProjectAction} spaReset>
+                <form
+                  class="flex-1"
+                  onSubmit$={() => {
+                    if (!isValidComment.value) {
+                      toast.error(
+                        'El comentario debe tener entre 1 y 500 caracteres'
+                      );
+                      return;
+                    }
+                    // send the comment to the websocket server
+                    createUserComment({
+                      content: content.value,
+                      projectId,
+                      userId: project.user.id,
+                    });
+                    content.value = '';
+                  }}
+                  preventdefault:submit
+                >
                   <Textarea
                     placeholder="Escribe tu comentario..."
                     class="mb-2 resize-none"
-                    name="comment"
+                    name="content"
+                    bind:value={content}
                   />
                   <div class="flex items-center justify-between">
                     <Button
                       look="secondary"
                       size="sm"
                       type="submit"
-                      disabled={commentProjectAction.isRunning}
+                      disabled={!isValidComment.value}
                     >
                       Enviar
                     </Button>
-                    <div class="text-sm text-muted-foreground">
-                      0 de 500 caracteres
+                    <div
+                      class={[
+                        { 'text-sm text-red-500': content.value.length > 500 },
+                        'text-sm text-muted-foreground',
+                      ]}
+                    >
+                      {content.value.length} de 500 caracteres
                     </div>
                   </div>
-                </Form>
+                </form>
               </div>
               <div class="mt-4 grid gap-4">
-                <Resource
-                  value={getCommentsByProject(projectId)}
-                  onResolved={(comments) => (
-                    <>
-                      {comments.map((comment) => (
-                        <CommentPost key={comment.id} comment={comment} />
-                      ))}
-                    </>
-                  )}
-                />
+                {comments.value.map((comment) => (
+                  <CommentPost key={comment.id} comment={comment} />
+                ))}
               </div>
             </div>
           )}
