@@ -11,7 +11,7 @@ import { Project } from './entities/project';
 
 export const findOneThesisProject = async (
   projectId: string
-): Promise<Project> => {
+): Promise<Project | null> => {
   const [projectFound] = await db
     .select({
       project: thesisProject,
@@ -29,6 +29,8 @@ export const findOneThesisProject = async (
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
     .where(eq(thesisProject.id, projectId))
     .groupBy(userTable.id, thesisProject.id, userLike.id);
+
+  if (!projectFound) return null;
 
   return {
     ...projectFound.project,
