@@ -42,8 +42,12 @@ export const useProject = routeLoader$(async ({ params }) => {
 });
 
 export const getProject = server$(async function (id: string) {
+  const project = await findOneThesisProject(id);
+
+  if (!project) return null;
+
   return {
-    project: await findOneThesisProject(id),
+    project,
   };
 });
 
@@ -104,9 +108,9 @@ export default component$(() => {
 
         <Resource
           value={getProject(projectId)}
-          onResolved={({ project }) => (
+          onResolved={(resolvedValue) => (
             <>
-              {userAuth.value.id === project.user.id && (
+              {userAuth.value.id === resolvedValue?.project.user.id && (
                 <div class="flex items-center gap-2 text-gray-400 hover:text-black">
                   <LuPencil class="size-5" />
                   <Link
@@ -126,8 +130,11 @@ export default component$(() => {
       ) : (
         <Resource
           value={getProject(projectId)}
-          onResolved={({ project }) => {
-            return <ProjectPost project={project} />;
+          onResolved={(project) => {
+            if (!project?.project) {
+              return <p>Proyecto no encontrado</p>;
+            }
+            return <ProjectPost project={project.project} />;
           }}
         />
       )}
@@ -196,6 +203,12 @@ export default component$(() => {
 
 export const head: DocumentHead = ({ resolveValue, params }) => {
   const project = resolveValue(useProject);
+
+  if (!project) {
+    return {
+      title: 'Proyecto no encontrado',
+    };
+  }
 
   const title = project.title;
   const description = project.description;
