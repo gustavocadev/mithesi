@@ -274,7 +274,7 @@ export const ProjectPost = component$<ProjectPostProps>(
                     createUserComment({
                       content: content.value,
                       projectId,
-                      userId: project.user.id,
+                      userId: userAuth.value.id,
                     });
                     content.value = '';
                   }}
