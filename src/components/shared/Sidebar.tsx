@@ -1,21 +1,61 @@
-import { component$ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
+import { component$, useContext } from '@builder.io/qwik';
+import { Form, globalAction$, Link } from '@builder.io/qwik-city';
+import { SocketContext } from '~/context/socket/SocketContext';
 import { Button } from '../ui/button/button';
-import { useUserAuth } from '~/routes/(authed)/layout';
+import { LuHome, LuLogOut, LuSearch, LuUser } from '@qwikest/icons/lucide';
+import { handleRequest } from '~/server/db/lucia';
+
+export const useSignoutAction = globalAction$(async (values, event) => {
+  const authRequest = handleRequest(event);
+  const { session } = await authRequest.validateUser();
+
+  if (!session) throw event.redirect(303, '/');
+
+  await authRequest.invalidateSessionCookie(session);
+
+  throw event.redirect(303, '/login');
+});
 
 type Props = {};
 
 export const Sidebar = component$<Props>(() => {
-  const user = useUserAuth();
-  return (
-    <aside class="md:w-80 lg:w-96 px-5 py-10 space-y-2">
-      <p class="text-xl font-bold">Hola: {user.value.name}</p>
+  const signoutAction = useSignoutAction();
+  const { isOnline } = useContext(SocketContext);
 
-      <Link href="/projects/new-project" class="block">
-        <Button class="w-full text-md uppercase font-bold">
-          Nuevo proyecto
-        </Button>
+  return (
+    <aside class="fixed hidden xl:flex rounded z-50 justify-between flex-col h-full p-2">
+      <Link
+        href="/projects/"
+        class="
+        text-4xl text-secondary font-black text-center hover:transform hover:scale-105 transition-transform"
+        prefetch
+      >
+        Mithesi {isOnline.value ? '🟢' : '🔴'}
       </Link>
+
+      <nav class="space-y-2">
+        <Link href="/projects" class="block">
+          <Button look="ghost" class="py-7">
+            <LuHome class="size-7" />
+          </Button>
+        </Link>
+        <Link href="/projects/search" class="block">
+          <Button look="ghost" class="py-7">
+            <LuSearch class="size-7" />
+          </Button>
+        </Link>
+        <Link href={`/`} class="block">
+          <Button look="ghost" class="py-7">
+            <LuUser class="size-7" />
+          </Button>
+        </Link>
+      </nav>
+
+      <Form action={signoutAction}>
+        <Button class="py-7" look="ghost">
+          <LuLogOut class="size-7" />
+        </Button>
+      </Form>
     </aside>
   );
 });
