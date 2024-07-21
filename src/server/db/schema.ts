@@ -28,7 +28,9 @@ export const userTable = pgTable('user', {
   }).notNull(),
   email: varchar('email', {
     length: 100,
-  }).notNull(),
+  })
+    .unique()
+    .notNull(),
 
   isConfirmed: boolean('is_confirmed').notNull().default(false),
   token: text('token'),
