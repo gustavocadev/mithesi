@@ -10,7 +10,8 @@ import type { CreateProjectDto } from './dto/project';
 import { Project } from './entities/project';
 
 export const findOneThesisProject = async (
-  projectId: string
+  projectId: string,
+  userId: string
 ): Promise<Project | null> => {
   const [projectFound] = await db
     .select({
@@ -22,13 +23,13 @@ export const findOneThesisProject = async (
         role: userTable.role,
       },
       likes: count(userLike.id),
-      isLiked: sql<boolean>`CASE WHEN ${userLike.id} IS NOT NULL THEN TRUE ELSE FALSE END`,
+      userLikeIds: sql<string[]>`ARRAY_AGG(${userLike.userId})`,
     })
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
     .where(eq(thesisProject.id, projectId))
-    .groupBy(userTable.id, thesisProject.id, userLike.id);
+    .groupBy(userTable.id, thesisProject.id);
 
   if (!projectFound) return null;
 
@@ -36,7 +37,8 @@ export const findOneThesisProject = async (
     ...projectFound.project,
     user: projectFound.user,
     likes: projectFound.likes,
-    isLiked: projectFound.isLiked,
+    userLikeIds: projectFound.userLikeIds,
+    isLikedByTheUserAuth: projectFound.userLikeIds.includes(userId),
   };
 };
 
@@ -53,8 +55,8 @@ export const findProjectsByUserId = async (
         lastName: userTable.lastName,
         role: userTable.role,
       },
+      userLikeIds: sql<string[]>`ARRAY_AGG(${userLike.userId})`,
       likes: count(userLike.id),
-      isLiked: sql<boolean>`CASE WHEN ${userLike.id} IS NOT NULL THEN TRUE ELSE FALSE END`,
     })
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
@@ -63,18 +65,20 @@ export const findProjectsByUserId = async (
       committeeMember,
       eq(committeeMember.thesisProjectId, thesisProject.id)
     )
-    .groupBy(userTable.id, thesisProject.id, userLike.id)
+    .groupBy(userTable.id, thesisProject.id)
     .orderBy(desc(thesisProject.createdAt));
 
   if (userRole === 'user') {
     const projects = await projectsByUserSubQuery.where(
       or(eq(thesisProject.userId, userId), eq(committeeMember.userId, userId))
     );
+
     return projects.map((project) => ({
       ...project.projects,
       user: project.user,
       likes: project.likes,
-      isLiked: project.isLiked,
+      userLikeIds: project.userLikeIds,
+      isLikedByTheUserAuth: project.userLikeIds.includes(userId),
     }));
   }
   const projects = await projectsByUserSubQuery;
@@ -83,7 +87,8 @@ export const findProjectsByUserId = async (
     ...project.projects,
     user: project.user,
     likes: project.likes,
-    isLiked: project.isLiked,
+    userLikeIds: project.userLikeIds,
+    isLikedByTheUserAuth: project.userLikeIds.includes(userId),
   }));
 };
 
