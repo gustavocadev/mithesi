@@ -18,8 +18,11 @@ import {
   zod$,
 } from '@builder.io/qwik-city';
 import { Button } from '~/components/ui/button/button';
-import { findOneThesisProject } from '~/server/services/project/project';
-import { LuArrowLeft, LuPencil } from '@qwikest/icons/lucide';
+import {
+  deleteProjectById,
+  findOneThesisProject,
+} from '~/server/services/project/project';
+import { LuArrowLeft, LuPencil, LuTrash } from '@qwikest/icons/lucide';
 import { ProjectPost } from '~/components/project/ProjectPost';
 import { Input } from '~/components/ui/input/input';
 import {
@@ -46,6 +49,10 @@ export const getCommitteeMembers = server$(async function (id: string) {
   return {
     committeeMembers: await findCommitteeMembersByProjectId(id),
   };
+});
+
+export const deleteProjectByIdFuction = server$(async function (id: string) {
+  await deleteProjectById(id);
 });
 
 export const useAddCommitteeMemberAction = routeAction$(
@@ -113,7 +120,7 @@ export default component$(() => {
             size="icon"
             class="rounded-full hover:bg-gray-200"
             onClick$={() => {
-              nav('/projects');
+              nav(-1);
             }}
           >
             <LuArrowLeft class="w-5 h-5" />
@@ -121,14 +128,32 @@ export default component$(() => {
         )}
 
         {userAuth.value.id === project.value?.user.id && (
-          <div class="flex items-center gap-2 text-gray-400 hover:text-black">
-            <LuPencil class="size-5" />
-            <Link
-              class="uppercase font-bold"
-              href={`/projects/edit/${projectId}`}
+          <div class="flex">
+            <Button
+              class="flex items-center gap-2 text-gray-400 hover:text-black uppercase font-bold"
+              look="ghost"
+              onClick$={async () => {
+                toast.promise(deleteProjectByIdFuction(projectId), {
+                  loading: 'Eliminando proyecto...',
+                  success: 'Proyecto eliminado con exito',
+                  error: 'Error al eliminar proyecto',
+                  finally: () => {
+                    nav('/projects/');
+                  },
+                });
+              }}
             >
-              Editar
-            </Link>
+              <LuTrash class="size-5" />
+            </Button>
+            <Button
+              class="flex items-center gap-2 text-gray-400 hover:text-black"
+              look="ghost"
+              onClick$={() => {
+                console.log('Edit project');
+              }}
+            >
+              <LuPencil class="size-5" />
+            </Button>
           </div>
         )}
       </div>
