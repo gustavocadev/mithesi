@@ -15,6 +15,7 @@ import { Button } from '~/components/ui/button/button';
 import { Input } from '~/components/ui/input/input';
 import { Label } from '~/components/ui/label/label';
 import { generateIdFromEntropySize } from 'lucia';
+import { Alert } from '../../../components/ui/alert/alert';
 
 export const useSignupAction = routeAction$(
   async (values, { redirect, fail }) => {
@@ -27,6 +28,18 @@ export const useSignupAction = routeAction$(
       }
 
       const passwordHash = await hashPassword(values.password);
+
+      const regexToValidateNameAndLastName = /^[a-zA-ZÀ-ÿ\-']+$/;
+      if (!regexToValidateNameAndLastName.test(values.name)) {
+        return fail(400, {
+          message: 'Invalid name',
+        });
+      }
+      if (!regexToValidateNameAndLastName.test(values.lastName)) {
+        return fail(400, {
+          message: 'Invalid last name',
+        });
+      }
 
       const username =
         values.name.toLowerCase().replaceAll(' ', '').replaceAll("'", '') +
@@ -81,6 +94,19 @@ export default component$(() => {
           action={signupAction}
           class="bg-white shadow rounded-lg p-10 space-y-6"
         >
+          {signupAction.value && (
+            <Alert.Root look="alert">
+              <Alert.Title>
+                Se ha encontrado un error al crear la cuenta
+              </Alert.Title>
+              <Alert.Description>
+                <ul class="list-disc">
+                  <li>{signupAction.value.message}</li>
+                </ul>
+              </Alert.Description>
+            </Alert.Root>
+          )}
+
           <div class="space-y-2">
             <Label
               class="uppercase text-gray-600 block text-xl font-bold"
