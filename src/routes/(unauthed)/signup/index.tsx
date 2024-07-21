@@ -14,6 +14,7 @@ import pg from 'pg';
 import { Button } from '~/components/ui/button/button';
 import { Input } from '~/components/ui/input/input';
 import { Label } from '~/components/ui/label/label';
+import { generateIdFromEntropySize } from 'lucia';
 
 export const useSignupAction = routeAction$(
   async (values, { redirect, fail }) => {
@@ -27,11 +28,16 @@ export const useSignupAction = routeAction$(
 
       const passwordHash = await hashPassword(values.password);
 
+      const username =
+        values.name.toLowerCase().replaceAll(' ', '').replaceAll("'", '') +
+        generateIdFromEntropySize(10);
+
       await db.insert(userTable).values({
         name: values.name,
         lastName: values.lastName,
         passwordHash: passwordHash,
         email: values.email,
+        username: username,
       });
 
       console.log('User created');
