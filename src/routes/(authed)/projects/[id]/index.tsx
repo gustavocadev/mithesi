@@ -134,7 +134,7 @@ export default component$(() => {
       </div>
       {project.value && <ProjectPost project={project.value} />}
 
-      <div class="space-y-2 absolute right-10 top-0 hidden xl:block">
+      <div class="space-y-2 fixed right-10 top-10 hidden xl:block">
         {project.value && project.value.status === 'approved' && (
           <section class="bg-white p-5 w-96 rounded-lg shadow mx-auto space-y-4">
             <h2 class="font-bold text-xl text-center">Miembros del jurado</h2>
