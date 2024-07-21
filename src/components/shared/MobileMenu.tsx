@@ -7,7 +7,7 @@ import { useUserAuth } from '~/routes/(authed)/layout';
 export const MobileMenu = component$(() => {
   const user = useUserAuth();
   return (
-    <nav class="gap-2 fixed bottom-0 flex xl:hidden items-center justify-center w-full bg-white p-1">
+    <nav class="gap-2 fixed bottom-0 flex xl:hidden items-center justify-center w-full bg-white p-1 z-50">
       <Link href="/projects" class="block">
         <Button look="ghost" class="py-7">
           <LuHome class="size-6" />
