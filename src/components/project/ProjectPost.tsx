@@ -50,7 +50,7 @@ export const useLikeProjectAction = globalAction$(
       }
 
       if (values.intent === 'deleteLike') {
-        await deleteUserLike(values.id);
+        await deleteUserLike(values.id, user.id);
       }
 
       return {
@@ -92,7 +92,7 @@ export const ProjectPost = component$<ProjectPostProps>(
       e.stopPropagation();
 
       // to update the project object with the new value only if we are in the project page
-      const isLiked = project.isLiked;
+      const isLiked = project.isLikedByTheUserAuth;
 
       const likePost = () =>
         likeProjectAction.submit({
@@ -104,8 +104,10 @@ export const ProjectPost = component$<ProjectPostProps>(
       if (projectId) {
         projectSelected.value = {
           ...project,
-          isLiked: !project.isLiked,
-          likes: project.isLiked ? project.likes - 1 : project.likes + 1,
+          isLikedByTheUserAuth: !project.isLikedByTheUserAuth,
+          likes: project.isLikedByTheUserAuth
+            ? project.likes - 1
+            : project.likes + 1,
         };
 
         await likePost();
@@ -117,8 +119,8 @@ export const ProjectPost = component$<ProjectPostProps>(
         if (projectElement.id === project.id) {
           return {
             ...projectElement,
-            isLiked: !projectElement.isLiked,
-            likes: projectElement.isLiked
+            isLikedByTheAuthor: !projectElement.isLikedByTheUserAuth,
+            likes: projectElement.isLikedByTheUserAuth
               ? projectElement.likes - 1
               : projectElement.likes + 1,
           };
@@ -133,9 +135,9 @@ export const ProjectPost = component$<ProjectPostProps>(
       console.log(likeProjectActionResponse);
     });
 
-    const isValidComment = useComputed$(() => {
-      return content.value.length <= 500 && content.value.length >= 1;
-    });
+    const isValidComment = useComputed$(
+      () => content.value.length <= 500 && content.value.length >= 1
+    );
 
     return (
       <Card.Root
@@ -209,17 +211,14 @@ export const ProjectPost = component$<ProjectPostProps>(
               type="submit"
               onClick$={(e) => handleLikePost(e)}
             >
-              {project.isLiked && project.user.id === userAuth.value.id ? (
+              {project.isLikedByTheUserAuth ? (
                 <TbHeartFilled color="red" font-size={22} />
               ) : (
                 <TbHeart font-size={22} />
               )}
               <span
                 style={{
-                  color:
-                    project.isLiked && project.user.id === userAuth.value.id
-                      ? 'red'
-                      : '',
+                  color: project.isLikedByTheUserAuth ? 'red' : '',
                 }}
               >
                 {project.likes}
