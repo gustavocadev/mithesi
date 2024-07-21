@@ -49,8 +49,9 @@ export const getCommitteeMembers = server$(async function (id: string) {
 });
 
 export const useAddCommitteeMemberAction = routeAction$(
-  async (values, { redirect, fail }) => {
+  async (values, { redirect, fail, sharedMap }) => {
     const userToAdd = await findOneUserByEmail(values.email);
+    const userAuth = sharedMap.get('user') as User;
 
     if (!userToAdd) {
       return fail(500, {
@@ -58,6 +59,17 @@ export const useAddCommitteeMemberAction = routeAction$(
       });
     }
 
+    if (userToAdd.role === 'admin') {
+      return fail(500, {
+        message: 'No puedes agregar a un administrador como miembro del jurado',
+      });
+    }
+
+    if (userToAdd.id === userAuth.id) {
+      return fail(500, {
+        message: 'No puedes agregarte a ti mismo como miembro del jurado',
+      });
+    }
     await createCommitteeMember(userToAdd.id, values.projectId);
 
     throw redirect(303, `/projects/${values.projectId}`);
@@ -84,18 +96,29 @@ export default component$(() => {
   });
 
   return (
-    <div class="space-y-4 mx-auto w-full sm:w-8/12 lg:w-5/12 2xl:w-4/12">
-      <div class="flex justify-between">
-        <Button
-          look="ghost"
-          size="icon"
-          class="rounded-full hover:bg-gray-200"
-          onClick$={() => {
-            nav('/projects');
-          }}
-        >
-          <LuArrowLeft class="w-5 h-5" />
-        </Button>
+    <div class="mx-auto w-full sm:w-8/12 lg:w-5/12 2xl:w-4/12">
+      {!project.value && (
+        <div class="flex gap-2 flex-col">
+          <h1 class="text-2xl font-bold">Proyecto no encontrado</h1>
+
+          <Link href="/projects" prefetch>
+            <Button look="outline">Regresar</Button>
+          </Link>
+        </div>
+      )}
+      <div class="flex justify-between p-2 lg:py-2 items-center">
+        {project.value && (
+          <Button
+            look="ghost"
+            size="icon"
+            class="rounded-full hover:bg-gray-200"
+            onClick$={() => {
+              nav('/projects');
+            }}
+          >
+            <LuArrowLeft class="w-5 h-5" />
+          </Button>
+        )}
 
         {userAuth.value.id === project.value?.user.id && (
           <div class="flex items-center gap-2 text-gray-400 hover:text-black">
@@ -112,15 +135,16 @@ export default component$(() => {
       {project.value && <ProjectPost project={project.value} />}
 
       <div class="space-y-2 absolute right-10 top-0 hidden xl:block">
-        {userAuth.value.role === 'admin' &&
-          project.value?.status === 'approved' && (
-            <section class="bg-white p-5 w-full rounded-lg shadow mx-auto space-y-4">
+        {project.value && project.value.status === 'approved' && (
+          <section class="bg-white p-5 w-96 rounded-lg shadow mx-auto space-y-4">
+            <h2 class="font-bold text-xl text-center">Miembros del jurado</h2>
+            {userAuth.value.role === 'admin' && (
               <Form
                 class="space-y-2"
                 action={addCommitteeMemberAction}
                 onSubmitCompleted$={$(() => {
                   if (addCommitteeMemberAction.value?.failed) {
-                    toast.error('El usuario no existe');
+                    toast.error(addCommitteeMemberAction.value?.message);
                     return;
                   }
                   toast.success('Miembro del jurado agregado con exito');
@@ -128,14 +152,13 @@ export default component$(() => {
                 spaReset
               >
                 <input type="hidden" name="projectId" value={projectId} />
-                <p class="font-bold text-xl text-center">Miembros del jurado</p>
+
                 <div class="flex items-center justify-center gap-2">
                   <Input
                     type="email"
                     id="email"
                     name="email"
                     placeholder="Email del Usuario"
-                    class="w-60"
                   />
                   <Button
                     type="submit"
@@ -145,30 +168,31 @@ export default component$(() => {
                   </Button>
                 </div>
               </Form>
+            )}
 
-              <Resource
-                value={getCommitteeMembers(projectId)}
-                onResolved={({ committeeMembers }) => {
-                  return (
-                    <div class="space-y-4">
-                      {committeeMembers.length !== 0 ? (
-                        committeeMembers.map((committeeMember) => (
-                          <ComitteeMember
-                            committeeMember={committeeMember}
-                            key={committeeMember.id}
-                            projectId={projectId ?? ''}
-                            user={userAuth.value}
-                          />
-                        ))
-                      ) : (
-                        <p class="text-center">No hay miembros del jurado</p>
-                      )}
-                    </div>
-                  );
-                }}
-              />
-            </section>
-          )}
+            <Resource
+              value={getCommitteeMembers(projectId)}
+              onResolved={({ committeeMembers }) => {
+                return (
+                  <div class="space-y-4">
+                    {committeeMembers.length !== 0 ? (
+                      committeeMembers.map((committeeMember) => (
+                        <ComitteeMember
+                          committeeMember={committeeMember}
+                          key={committeeMember.id}
+                          projectId={projectId}
+                          user={userAuth.value}
+                        />
+                      ))
+                    ) : (
+                      <p class="text-center">No hay miembros del jurado</p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+          </section>
+        )}
       </div>
     </div>
   );
