@@ -1,7 +1,7 @@
 import { db } from '~/server/db/db';
 import { userLike } from '~/server/db/schema';
 import { CreateUserLikeDto } from './dtos/create-user-like';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 export const createUserLike = async (
   createUserLikeDto: CreateUserLikeDto
@@ -12,6 +12,13 @@ export const createUserLike = async (
   });
 };
 
-export const deleteUserLike = async (projectId: string): Promise<void> => {
-  await db.delete(userLike).where(eq(userLike.thesisProjectId, projectId));
+export const deleteUserLike = async (
+  projectId: string,
+  userId: string
+): Promise<void> => {
+  await db
+    .delete(userLike)
+    .where(
+      and(eq(userLike.thesisProjectId, projectId), eq(userLike.userId, userId))
+    );
 };
