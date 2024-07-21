@@ -3,6 +3,7 @@ import { routeLoader$ } from '@builder.io/qwik-city';
 import type { User } from 'lucia';
 import { Toaster } from 'qwik-sonner';
 import { CreateProjectModal } from '~/components/project/CreateProjectModal';
+import { MobileMenu } from '~/components/shared/MobileMenu';
 import { Sidebar } from '~/components/shared/Sidebar';
 import { CommentProvider } from '~/context/comment/CommentProvider';
 import { ProjectProvider } from '~/context/project/ProjectProvider';
@@ -22,6 +23,7 @@ export default component$(() => {
         <CommentProvider>
           <div>
             <Sidebar />
+            <MobileMenu />
             <main class="xl:py-10 relative">
               <Slot />
             </main>
