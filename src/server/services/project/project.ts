@@ -107,3 +107,13 @@ export const createProject = async ({
     urlPdf,
   });
 };
+
+export const updateStatusProjectById = async (
+  projectId: string,
+  status: string
+): Promise<void> => {
+  await db
+    .update(thesisProject)
+    .set({ status })
+    .where(eq(thesisProject.id, projectId));
+};
