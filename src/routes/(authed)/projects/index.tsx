@@ -48,7 +48,7 @@ export default component$(() => {
   });
 
   return (
-    <Card.Root class="w-full md:w-8/12 xl:w-4/12 mx-auto rounded-xl">
+    <Card.Root class="w-full md:w-8/12 xl:w-4/12 mx-auto rounded-none xl:rounded-xl">
       <section class="flex items-center py-3 px-6">
         <p
           class="flex-1 text-gray-400 text-md cursor-text"
