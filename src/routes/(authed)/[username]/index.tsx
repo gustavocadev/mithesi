@@ -1,8 +1,12 @@
 import { component$ } from '@builder.io/qwik';
 import { useUserAuth } from '../layout';
+import { Form } from '@builder.io/qwik-city';
+import { Button } from '~/components/ui/button/button';
+import { useSignoutAction } from '~/components/shared/Sidebar';
 
 export default component$(() => {
   const user = useUserAuth();
+  const signoutAction = useSignoutAction();
   return (
     <div class="w-full text-center space-y-4">
       <h2 class="text-4xl font-semibold">
@@ -16,6 +20,12 @@ export default component$(() => {
         width={300}
         height={300}
       />
+
+      <Form action={signoutAction}>
+        <Button class=" uppercase" look="destructive">
+          Cerrar sesión
+        </Button>
+      </Form>
     </div>
   );
 });
