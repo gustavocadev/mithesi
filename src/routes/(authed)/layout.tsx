@@ -3,7 +3,7 @@ import { routeLoader$ } from '@builder.io/qwik-city';
 import type { User } from 'lucia';
 import { Toaster } from 'qwik-sonner';
 import { CreateProjectModal } from '~/components/project/CreateProjectModal';
-import { Header } from '~/components/shared/Header';
+import { Sidebar } from '~/components/shared/Sidebar';
 import { CommentProvider } from '~/context/comment/CommentProvider';
 import { ProjectProvider } from '~/context/project/ProjectProvider';
 import { SocketProvider } from '~/context/socket/SocketProvider';
@@ -21,8 +21,8 @@ export default component$(() => {
       <ProjectProvider>
         <CommentProvider>
           <div>
-            <Header />
-            <main class="py-10 relative">
+            <Sidebar />
+            <main class="xl:py-10 relative">
               <Slot />
             </main>
 
