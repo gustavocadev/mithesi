@@ -18,7 +18,7 @@ export const userTable = pgTable('user', {
     .primaryKey()
     .$defaultFn(() => generateIdFromEntropySize(10)),
   passwordHash: varchar('password_hash').notNull(),
-  username: varchar('username'),
+  username: varchar('username').notNull().unique(),
   // other user attributes
   name: varchar('name', {
     length: 55,
