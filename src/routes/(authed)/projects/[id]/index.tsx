@@ -33,16 +33,19 @@ import { CommentContext } from '~/context/comment/CommentContext';
 import { SocketContext } from '~/context/socket/SocketContext';
 import { toast } from 'qwik-sonner';
 import { findOneUserByEmail } from '~/server/services/user/user';
+import type { User } from 'lucia';
 
-export const useProject = routeLoader$(async ({ params }) => {
+export const useProject = routeLoader$(async ({ params, sharedMap }) => {
+  const user = sharedMap.get('user') as User;
   // the project data
-  const project = await findOneThesisProject(params.id);
+  const project = await findOneThesisProject(params.id, user.id);
 
   return project;
 });
 
 export const getProject = server$(async function (id: string) {
-  const project = await findOneThesisProject(id);
+  const user = this.sharedMap.get('user') as User;
+  const project = await findOneThesisProject(id, user.id);
 
   if (!project) return null;
 
