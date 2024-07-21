@@ -4,6 +4,7 @@ import { SocketContext } from '~/context/socket/SocketContext';
 import { Button } from '../ui/button/button';
 import { LuHome, LuLogOut, LuSearch, LuUser } from '@qwikest/icons/lucide';
 import { handleRequest } from '~/server/db/lucia';
+import { useUserAuth } from '~/routes/(authed)/layout';
 
 export const useSignoutAction = globalAction$(async (values, event) => {
   const authRequest = handleRequest(event);
@@ -21,6 +22,7 @@ type Props = {};
 export const Sidebar = component$<Props>(() => {
   const signoutAction = useSignoutAction();
   const { isOnline } = useContext(SocketContext);
+  const user = useUserAuth();
 
   return (
     <aside class="fixed hidden xl:flex rounded z-50 justify-between flex-col h-full p-2">
@@ -44,7 +46,7 @@ export const Sidebar = component$<Props>(() => {
             <LuSearch class="size-7" />
           </Button>
         </Link>
-        <Link href={`/`} class="block">
+        <Link href={`/${user.value.username}`} class="block">
           <Button look="ghost" class="py-7">
             <LuUser class="size-7" />
           </Button>
