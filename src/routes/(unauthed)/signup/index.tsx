@@ -23,7 +23,7 @@ export const useSignupAction = routeAction$(
       // verify passwords match
       if (values.password !== values.confirmPassword) {
         return fail(400, {
-          message: 'Passwords do not match',
+          message: 'Las contraseñas no coinciden',
         });
       }
 
@@ -32,18 +32,21 @@ export const useSignupAction = routeAction$(
       const regexToValidateNameAndLastName = /^[a-zA-ZÀ-ÿ\-']+$/;
       if (!regexToValidateNameAndLastName.test(values.name)) {
         return fail(400, {
-          message: 'Invalid name',
+          message: 'Nombre inválido',
         });
       }
       if (!regexToValidateNameAndLastName.test(values.lastName)) {
         return fail(400, {
-          message: 'Invalid last name',
+          message: 'Apellido inválido',
         });
       }
 
       const username =
-        values.name.toLowerCase().replaceAll(' ', '').replaceAll("'", '') +
-        generateIdFromEntropySize(10);
+        values.name
+          .toLowerCase()
+          .replaceAll(' ', '')
+          .replaceAll("'", '')
+          .slice(0, 5) + generateIdFromEntropySize(10);
 
       await db.insert(userTable).values({
         name: values.name,
@@ -61,22 +64,57 @@ export const useSignupAction = routeAction$(
         e.message === 'AUTH_DUPLICATE_KEY_ID'
       ) {
         return fail(400, {
-          message: 'Username already taken',
+          message: 'El u',
         });
       }
       return fail(500, {
-        message: 'An unknown error occurred',
+        message: 'El email ya está registrado',
       });
     }
     // make sure you don't throw inside a try/catch block!
     throw redirect(303, '/login');
   },
   zod$({
-    name: z.string().min(1).max(50),
-    lastName: z.string().min(1).max(50),
-    email: z.string().email(),
-    password: z.string().min(8).max(255),
-    confirmPassword: z.string().min(8).max(255),
+    name: z
+      .string({
+        message: 'El campo nombre es requerido',
+      })
+      .min(1, {
+        message: 'El nombre debe tener al menos 1 caracter',
+      })
+      .max(50, {
+        message: 'El nombre debe tener máximo 50 caracteres',
+      }),
+    lastName: z
+      .string({
+        message: 'El campo apellido es requerido',
+      })
+      .min(1, {
+        message: 'El apellido debe tener al menos 1 caracter',
+      })
+      .max(50, {
+        message: 'El apellido debe tener máximo 50 caracteres',
+      }),
+    email: z
+      .string({
+        message: 'El campo email es requerido',
+      })
+      .email({
+        message: 'El email no es válido',
+      }),
+    password: z
+      .string({
+        message: 'La contraseña debe tener al menos 8 caracteres y máximo 255',
+      })
+      .min(8, {
+        message: 'La contraseña debe tener al menos 8 caracteres',
+      })
+      .max(255, {
+        message: 'La contraseña debe tener máximo 255 caracteres',
+      }),
+    confirmPassword: z.string({
+      message: 'La confirmación de la contraseña es requerida',
+    }),
   })
 );
 
@@ -94,7 +132,7 @@ export default component$(() => {
           action={signupAction}
           class="bg-white shadow rounded-lg p-10 space-y-6"
         >
-          {signupAction.value && (
+          {signupAction.value && signupAction.value.message && (
             <Alert.Root look="alert">
               <Alert.Title>
                 Se ha encontrado un error al crear la cuenta
@@ -122,7 +160,9 @@ export default component$(() => {
               class="w-full bg-gray-50"
             />
             {signupAction.value?.fieldErrors?.name && (
-              <p class="text-red-500 text-sm">El nombre es requerido</p>
+              <p class="text-red-500 text-sm">
+                {signupAction.value.fieldErrors.name}
+              </p>
             )}
           </div>
 
@@ -141,7 +181,9 @@ export default component$(() => {
               class="w-full bg-gray-50"
             />
             {signupAction.value?.fieldErrors?.lastName && (
-              <p class="text-red-500 text-sm">El apellido es requerido</p>
+              <p class="text-red-500 text-sm">
+                {signupAction.value.fieldErrors.lastName}
+              </p>
             )}
           </div>
 
@@ -160,7 +202,9 @@ export default component$(() => {
               class="w-full bg-gray-50"
             />
             {signupAction.value?.fieldErrors?.email && (
-              <p class="text-red-500 text-sm">El email es requerido</p>
+              <p class="text-red-500 text-sm">
+                {signupAction.value.fieldErrors.email}
+              </p>
             )}
           </div>
 
@@ -179,7 +223,9 @@ export default component$(() => {
               class="w-full bg-gray-50"
             />
             {signupAction.value?.fieldErrors?.password && (
-              <p class="text-red-500 text-sm">La contraseña es requerida</p>
+              <p class="text-red-500 text-sm">
+                {signupAction.value.fieldErrors.password}
+              </p>
             )}
           </div>
 
@@ -199,7 +245,7 @@ export default component$(() => {
             />
             {signupAction.value?.fieldErrors?.confirmPassword && (
               <p class="text-red-500 text-sm">
-                La confirmación de la contraseña es requerida
+                {signupAction.value.fieldErrors.confirmPassword}
               </p>
             )}
           </div>
