@@ -6,7 +6,6 @@ import {
   routeAction$,
   zod$,
   z,
-  useLocation,
 } from '@builder.io/qwik-city';
 import { Button } from '~/components/ui/button/button';
 import { Input } from '~/components/ui/input/input';
@@ -15,7 +14,6 @@ import { login } from '~/server/services/auth/auth';
 
 export const useAuthSigninAction = routeAction$(
   async (values, { redirect, fail, cookie }) => {
-    console.log(values);
     // Important! Use `handleRequest` to handle the authentication request
     const authRequest = handleRequest({ cookie });
     const { message, session } = await login(values.email, values.password);
@@ -37,7 +35,6 @@ export const useAuthSigninAction = routeAction$(
 export default component$(() => {
   // const loginAction = useLoginAction()
   const authSignInAction = useAuthSigninAction();
-  const loc = useLocation();
 
   // useVisibleTask$(() => {
   //   console.log(`${loc.url.origin}/projects`);
@@ -85,12 +82,19 @@ export default component$(() => {
               name="password"
             />
           </div>
+          <div>
+            {authSignInAction.value?.failed && (
+              <p class="text-red-500 text-sm">
+                {authSignInAction.value.message}
+              </p>
+            )}
+          </div>
 
           <Button
             type="submit"
             class="w-full text-md uppercase font-bold"
             look="primary"
-            disabled={loc.isNavigating}
+            disabled={authSignInAction.isRunning}
           >
             Iniciar sesion
           </Button>
