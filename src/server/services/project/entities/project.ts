@@ -8,5 +8,6 @@ export type Project = SelectProject & {
     role: SelectUser['role'];
   };
   likes: number;
-  isLiked: boolean;
+  userLikeIds: string[];
+  isLikedByTheUserAuth: boolean;
 };
