@@ -72,6 +72,7 @@ export const thesisProject = pgTable('thesis_project', {
   title: text('title').notNull(),
   description: text('description').notNull(),
   urlPdf: text('url_pdf').notNull(),
+  isVisible: boolean('is_visible').notNull().default(true),
   urlImg: text('url_img'),
   status: text('status').notNull().default('pending'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
