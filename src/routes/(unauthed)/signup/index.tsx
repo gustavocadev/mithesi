@@ -89,6 +89,9 @@ export default component$(() => {
               placeholder="Nombres"
               class="w-full bg-gray-50"
             />
+            {signupAction.value?.fieldErrors?.name && (
+              <p class="text-red-500 text-sm">El nombre es requerido</p>
+            )}
           </div>
 
           <div class="space-y-2">
@@ -105,6 +108,9 @@ export default component$(() => {
               placeholder="Apellidos"
               class="w-full bg-gray-50"
             />
+            {signupAction.value?.fieldErrors?.lastName && (
+              <p class="text-red-500 text-sm">El apellido es requerido</p>
+            )}
           </div>
 
           <div class="space-y-2">
@@ -121,6 +127,9 @@ export default component$(() => {
               placeholder="Email de registro"
               class="w-full bg-gray-50"
             />
+            {signupAction.value?.fieldErrors?.email && (
+              <p class="text-red-500 text-sm">El email es requerido</p>
+            )}
           </div>
 
           <div class="space-y-2">
@@ -137,6 +146,9 @@ export default component$(() => {
               placeholder="Password de registro"
               class="w-full bg-gray-50"
             />
+            {signupAction.value?.fieldErrors?.password && (
+              <p class="text-red-500 text-sm">La contraseña es requerida</p>
+            )}
           </div>
 
           <div class="space-y-2">
@@ -153,6 +165,11 @@ export default component$(() => {
               placeholder="Repetir password"
               class="w-full bg-gray-50"
             />
+            {signupAction.value?.fieldErrors?.confirmPassword && (
+              <p class="text-red-500 text-sm">
+                La confirmación de la contraseña es requerida
+              </p>
+            )}
           </div>
 
           <Button
