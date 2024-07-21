@@ -1,4 +1,4 @@
-import { count, desc, eq, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, or, sql } from 'drizzle-orm';
 import { db } from '~/server/db/db';
 import {
   committeeMember,
@@ -28,7 +28,9 @@ export const findOneThesisProject = async (
     .from(thesisProject)
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
-    .where(eq(thesisProject.id, projectId))
+    .where(
+      and(eq(thesisProject.isVisible, true), eq(thesisProject.id, projectId))
+    )
     .groupBy(userTable.id, thesisProject.id);
 
   if (!projectFound) return null;
@@ -70,7 +72,13 @@ export const findProjectsByUserId = async (
 
   if (userRole === 'user') {
     const projects = await projectsByUserSubQuery.where(
-      or(eq(thesisProject.userId, userId), eq(committeeMember.userId, userId))
+      and(
+        or(
+          eq(thesisProject.userId, userId),
+          eq(committeeMember.userId, userId)
+        ),
+        eq(thesisProject.isVisible, true)
+      )
     );
 
     return projects.map((project) => ({
@@ -81,7 +89,9 @@ export const findProjectsByUserId = async (
       isLikedByTheUserAuth: project.userLikeIds.includes(userId),
     }));
   }
-  const projects = await projectsByUserSubQuery;
+  const projects = await projectsByUserSubQuery.where(
+    eq(thesisProject.isVisible, true)
+  );
 
   return projects.map((project) => ({
     ...project.projects,
@@ -119,5 +129,8 @@ export const updateStatusProjectById = async (
 };
 
 export const deleteProjectById = async (projectId: string): Promise<void> => {
-  await db.delete(thesisProject).where(eq(thesisProject.id, projectId));
+  await db
+    .update(thesisProject)
+    .set({ isVisible: false })
+    .where(eq(thesisProject.id, projectId));
 };
