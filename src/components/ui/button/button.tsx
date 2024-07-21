@@ -15,7 +15,7 @@ export const buttonVariants = cva(
           'border-base bg-alert text-alert-foreground shadow-sm hover:bg-alert/90 active:shadow-base active:press',
         outline:
           'border bg-background text-foreground shadow-sm hover:bg-accent active:shadow-base active:press',
-        ghost: 'text-accent-foreground hover:bg-accent',
+        ghost: 'text-accent-foreground hover:bg-gray-200',
         link: 'text-foreground hover:bg-transparent hover:text-foreground/80 hover:underline hover:underline-offset-2',
         destructive:
           'border-red-500 bg-red-500 text-white shadow-sm hover:bg-red-600 active:shadow-base active:press',
