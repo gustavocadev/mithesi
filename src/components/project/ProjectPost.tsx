@@ -35,6 +35,7 @@ import { getCommentsByProjectId } from '~/server/services/comment/comment';
 import { CommentContext } from '~/context/comment/CommentContext';
 import { toast } from 'qwik-sonner';
 import { useUserAuth } from '~/routes/(authed)/layout';
+import { updateStatusProjectById } from '~/server/services/project/project';
 
 export const useLikeProjectAction = globalAction$(
   async (values, { redirect, sharedMap }) => {
@@ -70,6 +71,13 @@ export const useLikeProjectAction = globalAction$(
 
 export const getCommentsByProject = server$(function (projectId: string) {
   return getCommentsByProjectId(projectId);
+});
+
+const updateStatuaProjectFunction = server$(async function (
+  projectId,
+  status: 'approved' | 'rejected' | 'pending'
+) {
+  await updateStatusProjectById(projectId, status);
 });
 
 export type ProjectPostProps = {
@@ -203,6 +211,56 @@ export const ProjectPost = component$<ProjectPostProps>(
               </Badge>
             )}
           </div>
+          {userAuth.value.role === 'admin' && project.status === 'pending' && (
+            <div class="flex gap-4">
+              <Button
+                look="outline"
+                class="flex-1"
+                type="button"
+                onClick$={async (e) => {
+                  e.stopPropagation();
+                  projectSelected.value = {
+                    ...project,
+                    status: 'approved',
+                  };
+
+                  toast.promise(
+                    updateStatuaProjectFunction(project.id, 'approved'),
+                    {
+                      loading: 'Cargando...',
+                      success: 'Proyecto aprobado con éxito',
+                      error: 'Error al aprobar el proyecto',
+                    }
+                  );
+                }}
+              >
+                Aceptar
+              </Button>
+              <Button
+                look="outline"
+                class="flex-1"
+                type="button"
+                onClick$={async (e) => {
+                  e.stopPropagation();
+                  projectSelected.value = {
+                    ...project,
+                    status: 'rejected',
+                  };
+
+                  toast.promise(
+                    updateStatuaProjectFunction(project.id, 'rejected'),
+                    {
+                      loading: 'Cargando...',
+                      success: 'Proyecto rechazado con éxito',
+                      error: 'Error al rechazar el proyecto',
+                    }
+                  );
+                }}
+              >
+                Rechazar
+              </Button>
+            </div>
+          )}
           <div class="flex items-center justify-start w-full gap-1">
             <Button
               look="ghost"
@@ -253,7 +311,7 @@ export const ProjectPost = component$<ProjectPostProps>(
               <span class="sr-only">Share</span>
             </Button>
           </div>
-          {projectId && (
+          {projectId && project.status === 'approved' && (
             <div class="mt-8 border-t pt-4">
               <div class="flex items-start gap-4">
                 <Avatar.Root class="w-10 h-10 border">
