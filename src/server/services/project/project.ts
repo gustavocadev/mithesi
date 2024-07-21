@@ -117,3 +117,7 @@ export const updateStatusProjectById = async (
     .set({ status })
     .where(eq(thesisProject.id, projectId));
 };
+
+export const deleteProjectById = async (projectId: string): Promise<void> => {
+  await db.delete(thesisProject).where(eq(thesisProject.id, projectId));
+};
