@@ -100,7 +100,7 @@ export default component$(() => {
                 Se ha encontrado un error al crear la cuenta
               </Alert.Title>
               <Alert.Description>
-                <ul class="list-disc">
+                <ul class="list-disc pl-4">
                   <li>{signupAction.value.message}</li>
                 </ul>
               </Alert.Description>
