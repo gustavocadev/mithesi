@@ -21,16 +21,15 @@ export default component$(() => {
     <SocketProvider>
       <ProjectProvider>
         <CommentProvider>
-          <div>
-            <Sidebar />
-            <MobileMenu />
-            <main class="pb-16 xl:py-10 relative">
-              <Slot />
-            </main>
+          <Sidebar />
+          <MobileMenu />
+          <main class="pb-16 xl:py-10 relative">
+            <Slot />
+          </main>
 
-            <CreateProjectModal />
-            <Toaster richColors />
-          </div>
+          <CreateProjectModal />
+
+          <Toaster richColors />
         </CommentProvider>
       </ProjectProvider>
     </SocketProvider>
