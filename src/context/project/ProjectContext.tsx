@@ -3,6 +3,7 @@ import type { Project } from '~/server/services/project/entities/project';
 
 type ProjectState = {
   showCreateProjectModal: Signal<boolean>;
+  showUpdateProjectModal: Signal<boolean>;
   projectSelected: Signal<Project | null>;
   projects: Signal<Project[]>;
 };
