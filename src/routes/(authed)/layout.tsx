@@ -24,7 +24,7 @@ export default component$(() => {
           <div>
             <Sidebar />
             <MobileMenu />
-            <main class="xl:py-10 relative">
+            <main class="pb-16 xl:py-10 relative">
               <Slot />
             </main>
 
