@@ -123,6 +123,17 @@ export const updateProjectById = async (
   id: string,
   updateProjectDto: UpdateProjectDto
 ) => {
+  if (!updateProjectDto.urlImg) {
+    await db
+      .update(thesisProject)
+      .set({
+        title: updateProjectDto.title,
+        description: updateProjectDto.description,
+        urlPdf: updateProjectDto.urlPdf,
+      })
+      .where(eq(thesisProject.id, id));
+  }
+
   await db
     .update(thesisProject)
     .set({
