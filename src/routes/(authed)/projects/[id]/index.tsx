@@ -3,6 +3,7 @@ import {
   component$,
   Resource,
   useContext,
+  useSignal,
   useTask$,
 } from '@builder.io/qwik';
 import {
@@ -36,6 +37,8 @@ import { SocketContext } from '~/context/socket/SocketContext';
 import { toast } from 'qwik-sonner';
 import { findOneUserByEmail } from '~/server/services/user/user';
 import type { User } from 'lucia';
+import { UpdateProjectModal } from '~/components/project/UpdateProjectModal';
+import { ProjectContext } from '~/context/project/ProjectContext';
 
 export const useProject = routeLoader$(async ({ params, sharedMap }) => {
   const user = sharedMap.get('user') as User;
@@ -90,7 +93,9 @@ export const useAddCommitteeMemberAction = routeAction$(
 export default component$(() => {
   const userAuth = useUserAuth();
   const { getCommentsByProjectId } = useContext(CommentContext);
+  const { projectSelected } = useContext(ProjectContext);
   const { socket } = useContext(SocketContext);
+  const showUpdateProjectModal = useSignal(false);
   const addCommitteeMemberAction = useAddCommitteeMemberAction();
   const project = useProject();
   const nav = useNavigate();
@@ -100,6 +105,9 @@ export default component$(() => {
   useTask$(({ track }) => {
     track(() => socket.value);
     getCommentsByProjectId(projectId);
+
+    // set the project selected
+    projectSelected.value = project.value;
   });
 
   return (
@@ -149,7 +157,7 @@ export default component$(() => {
               class="flex items-center gap-2 text-gray-400 hover:text-black"
               look="ghost"
               onClick$={() => {
-                console.log('Edit project');
+                showUpdateProjectModal.value = true;
               }}
             >
               <LuPencil class="size-5" />
@@ -219,6 +227,7 @@ export default component$(() => {
           </section>
         )}
       </div>
+      <UpdateProjectModal showUpdateProjectModal={showUpdateProjectModal} />
     </div>
   );
 });
