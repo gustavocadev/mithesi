@@ -42,8 +42,8 @@ export const useUpdateProjectAction = globalAction$(
     return { success: true };
   },
   zod$({
-    title: z.string().min(1).max(100),
-    description: z.string().min(1).max(1000),
+    title: z.string().min(1).max(100).trim(),
+    description: z.string().min(1).max(1000).trim(),
     image: zfd.file().optional(),
     pdf: zfd.file(),
   })
