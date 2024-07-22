@@ -8,6 +8,7 @@ import {
 } from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
 import { Project } from './entities/project';
+import { UpdateProjectDto } from './dto/project';
 
 export const findOneThesisProject = async (
   projectId: string,
@@ -116,6 +117,21 @@ export const createProject = async ({
     urlImg,
     urlPdf,
   });
+};
+
+export const updateProjectById = async (
+  id: string,
+  updateProjectDto: UpdateProjectDto
+) => {
+  await db
+    .update(thesisProject)
+    .set({
+      title: updateProjectDto.title,
+      description: updateProjectDto.description,
+      urlImg: updateProjectDto.urlImg,
+      urlPdf: updateProjectDto.urlPdf,
+    })
+    .where(eq(thesisProject.id, id));
 };
 
 export const updateStatusProjectById = async (
