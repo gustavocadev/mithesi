@@ -1,5 +1,4 @@
 import {
-  $,
   component$,
   Resource,
   useContext,
@@ -175,13 +174,13 @@ export default component$(() => {
               <Form
                 class="space-y-2"
                 action={addCommitteeMemberAction}
-                onSubmitCompleted$={$(() => {
+                onSubmitCompleted$={() => {
                   if (addCommitteeMemberAction.value?.failed) {
                     toast.error(addCommitteeMemberAction.value?.message);
                     return;
                   }
                   toast.success('Miembro del jurado agregado con exito');
-                })}
+                }}
                 spaReset
               >
                 <input type="hidden" name="projectId" value={projectId} />
