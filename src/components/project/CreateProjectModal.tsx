@@ -1,4 +1,4 @@
-import { $, component$, useContext } from '@builder.io/qwik';
+import { component$, useContext } from '@builder.io/qwik';
 import { Modal } from '../ui/modal/modal';
 import { ProjectContext } from '~/context/project/ProjectContext';
 import { Label } from '../ui/label/label';
@@ -28,7 +28,7 @@ export const useCreateProjectAction = globalAction$(
       title: values.title,
       urlImg: urlImage,
       urlPdf,
-      userId: user.id,
+      userId: user.id
     });
 
     throw redirect(303, '/projects');
@@ -37,7 +37,7 @@ export const useCreateProjectAction = globalAction$(
     title: z.string().min(1).max(100).trim(),
     description: z.string().min(1).max(1000).trim(),
     image: zfd.file().optional(),
-    pdf: zfd.file(),
+    pdf: zfd.file()
   })
 );
 
@@ -53,11 +53,11 @@ export const CreateProjectModal = component$(() => {
         </Modal.Description>
         <Form
           action={createProjectAction}
-          onSubmitCompleted$={$(() => {
+          onSubmitCompleted$={() => {
             if (createProjectAction.value?.failed) return;
             showCreateProjectModal.value = false;
             toast.success('Proyecto creado con exito');
-          })}
+          }}
         >
           <div class="grid gap-4 py-4">
             <div class="space-y-2">
@@ -91,7 +91,7 @@ export const CreateProjectModal = component$(() => {
             <div class="space-y-2">
               <Label for="pdf">Proyecto de tesis PDF (*)</Label>
               <Input id="pdf" type="file" required name="pdf" accept=".pdf" />
-              {createProjectAction.value?.fieldErrors.pdf && (
+              {createProjectAction.value?.fieldErrors['pdf.size'] && (
                 <p class="text-red-500 text-sm">
                   El campo proyecto de tesis PDF es requerido
                 </p>

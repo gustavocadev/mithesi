@@ -1,4 +1,4 @@
-import { $, component$, useContext, type Signal } from '@builder.io/qwik';
+import { component$, useContext, type Signal } from '@builder.io/qwik';
 import { Modal } from '../ui/modal/modal';
 import { Label } from '../ui/label/label';
 import { Input } from '../ui/input/input';
@@ -21,7 +21,7 @@ export const useUpdateProjectAction = globalAction$(
     const urlPdf = await uploadFile(values.pdf);
     if (!urlPdf) {
       return fail(500, {
-        message: 'Error al subir el archivo pdf',
+        message: 'Error al subir el archivo pdf'
       });
     }
 
@@ -36,7 +36,7 @@ export const useUpdateProjectAction = globalAction$(
       title: values.title,
       urlImg: urlImage,
       urlPdf,
-      userId: user.id,
+      userId: user.id
     });
 
     return { success: true };
@@ -45,7 +45,7 @@ export const useUpdateProjectAction = globalAction$(
     title: z.string().min(1).max(100).trim(),
     description: z.string().min(1).max(1000).trim(),
     image: zfd.file().optional(),
-    pdf: zfd.file(),
+    pdf: zfd.file()
   })
 );
 
@@ -67,11 +67,11 @@ export const UpdateProjectModal = component$<Props>(
           </Modal.Description>
           <Form
             action={updateProjectAction}
-            onSubmitCompleted$={$(() => {
+            onSubmitCompleted$={() => {
               if (updateProjectAction.value?.failed) return;
               showUpdateProjectModal.value = false;
               toast.success('Proyecto actualizado correctamente');
-            })}
+            }}
           >
             <div class="grid gap-4 py-4">
               <div class="space-y-2">
@@ -109,7 +109,7 @@ export const UpdateProjectModal = component$<Props>(
               <div class="space-y-2">
                 <Label for="pdf">Proyecto de tesis PDF (*)</Label>
                 <Input id="pdf" type="file" required name="pdf" accept=".pdf" />
-                {updateProjectAction.value?.fieldErrors?.pdf && (
+                {updateProjectAction.value?.fieldErrors?.['pdf.size'] && (
                   <p class="text-red-500 text-sm">
                     El campo proyecto de tesis PDF es requerido
                   </p>
