@@ -7,12 +7,12 @@ import {
   userTable,
 } from '~/server/db/schema';
 import type { CreateProjectDto } from './dto/project';
-import { Project } from './entities/project';
-import { UpdateProjectDto } from './dto/project';
+import type { Project } from './entities/project';
+import type { UpdateProjectDto } from './dto/project';
 
 export const findOneThesisProject = async (
   projectId: string,
-  userId: string
+  userId: string,
 ): Promise<Project | null> => {
   const [projectFound] = await db
     .select({
@@ -30,7 +30,7 @@ export const findOneThesisProject = async (
     .innerJoin(userTable, eq(userTable.id, thesisProject.userId))
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
     .where(
-      and(eq(thesisProject.isVisible, true), eq(thesisProject.id, projectId))
+      and(eq(thesisProject.isVisible, true), eq(thesisProject.id, projectId)),
     )
     .groupBy(userTable.id, thesisProject.id);
 
@@ -47,7 +47,7 @@ export const findOneThesisProject = async (
 
 export const findProjectsByUserId = async (
   userId: string,
-  userRole: string
+  userRole: string,
 ): Promise<Project[]> => {
   const projectsByUserSubQuery = db
     .select({
@@ -66,7 +66,7 @@ export const findProjectsByUserId = async (
     .leftJoin(userLike, eq(userLike.thesisProjectId, thesisProject.id))
     .leftJoin(
       committeeMember,
-      eq(committeeMember.thesisProjectId, thesisProject.id)
+      eq(committeeMember.thesisProjectId, thesisProject.id),
     )
     .groupBy(userTable.id, thesisProject.id)
     .orderBy(desc(thesisProject.createdAt));
@@ -76,10 +76,10 @@ export const findProjectsByUserId = async (
       and(
         or(
           eq(thesisProject.userId, userId),
-          eq(committeeMember.userId, userId)
+          eq(committeeMember.userId, userId),
         ),
-        eq(thesisProject.isVisible, true)
-      )
+        eq(thesisProject.isVisible, true),
+      ),
     );
 
     return projects.map((project) => ({
@@ -91,7 +91,7 @@ export const findProjectsByUserId = async (
     }));
   }
   const projects = await projectsByUserSubQuery.where(
-    eq(thesisProject.isVisible, true)
+    eq(thesisProject.isVisible, true),
   );
 
   return projects.map((project) => ({
@@ -121,7 +121,7 @@ export const createProject = async ({
 
 export const updateProjectById = async (
   id: string,
-  updateProjectDto: UpdateProjectDto
+  updateProjectDto: UpdateProjectDto,
 ) => {
   if (!updateProjectDto.urlImg) {
     await db
@@ -132,6 +132,7 @@ export const updateProjectById = async (
         urlPdf: updateProjectDto.urlPdf,
       })
       .where(eq(thesisProject.id, id));
+    return;
   }
 
   await db
@@ -147,7 +148,7 @@ export const updateProjectById = async (
 
 export const updateStatusProjectById = async (
   projectId: string,
-  status: string
+  status: string,
 ): Promise<void> => {
   await db
     .update(thesisProject)
