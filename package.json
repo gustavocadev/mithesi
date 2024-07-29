@@ -19,7 +19,7 @@
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "drizzle-kit:push": "drizzle-kit push",
     "fmt": "biome format --write .",
-    "fmt.check": "prettier --check .",
+    "fmt.check": "biome check --write .",
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
     "serve": "bun server/entry.bun.js",
